@@ -131,7 +131,7 @@
         {
             "language": "typescript",
             "source": [
-                "const oneHotData = await data.map(({ sex, smoker, region, ...rest }) => ({\r\n  sex_female: sex == 'female' ? 1 : 0,\r\n  sex_male: sex == 'male' ? 1 : 0,\r\n  smoker_yes: smoker == 'yes' ? 1 : 0,\r\n  smoker_no: smoker == 'no' ? 1 : 0,\r\n  region_se: region == 'southeast' ? 1 : 0,\r\n  region_sw: region == 'southwest' ? 1 : 0,\r\n  region_ne: region == 'northeast' ? 1 : 0,\r\n  region_nw: region == 'northwest' ? 1 : 0,\r\n  ...rest\r\n})).toArray();\r\nfrom(oneHotData.slice(0,5))"
+                "const { oneHot } = require('./util/oneHot');\r\nconst oneHotData = oneHot(await data.toArray(), ['sex', 'smoker', 'region']);\r\nfrom(oneHotData.slice(0,5))"
             ],
             "outputs": [
                 {
@@ -150,7 +150,7 @@
                         {
                             "mime": "text/html",
                             "value": [
-                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">sex_female</th><th style=\"text-align: right;\">sex_male</th><th style=\"text-align: right;\">smoker_yes</th><th style=\"text-align: right;\">smoker_no</th><th style=\"text-align: right;\">region_se</th><th style=\"text-align: right;\">region_sw</th><th style=\"text-align: right;\">region_ne</th><th style=\"text-align: right;\">region_nw</th><th style=\"text-align: right;\">age</th><th style=\"text-align: right;\">bmi</th><th style=\"text-align: right;\">children</th><th style=\"text-align: right;\">charges</th></tr></thead><tbody><tr><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">19</td><td style=\"text-align: right;\">27.900</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">16884.92400</td></tr><tr><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">18</td><td style=\"text-align: right;\">33.770</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1725.55230</td></tr><tr><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">28</td><td style=\"text-align: right;\">33.000</td><td style=\"text-align: right;\">3</td><td style=\"text-align: right;\">4449.46200</td></tr><tr><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">33</td><td style=\"text-align: right;\">22.705</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">21984.47061</td></tr><tr><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">32</td><td style=\"text-align: right;\">28.880</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">3866.85520</td></tr></tbody></table>"
+                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">age</th><th style=\"text-align: right;\">bmi</th><th style=\"text-align: right;\">children</th><th style=\"text-align: right;\">charges</th><th style=\"text-align: right;\">sex_female</th><th style=\"text-align: right;\">sex_male</th><th style=\"text-align: right;\">smoker_yes</th><th style=\"text-align: right;\">smoker_no</th><th style=\"text-align: right;\">region_southwest</th><th style=\"text-align: right;\">region_southeast</th><th style=\"text-align: right;\">region_northwest</th><th style=\"text-align: right;\">region_northeast</th></tr></thead><tbody><tr><td style=\"text-align: right;\">19</td><td style=\"text-align: right;\">27.900</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">16884.92400</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">18</td><td style=\"text-align: right;\">33.770</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1725.55230</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">28</td><td style=\"text-align: right;\">33.000</td><td style=\"text-align: right;\">3</td><td style=\"text-align: right;\">4449.46200</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">33</td><td style=\"text-align: right;\">22.705</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">21984.47061</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">32</td><td style=\"text-align: right;\">28.880</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">3866.85520</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td></tr></tbody></table>"
                             ]
                         }
                     ]
@@ -160,7 +160,7 @@
         {
             "language": "typescript",
             "source": [
-                "const bmiMax = Math.max(...oneHotData.map(({ bmi }) => bmi));\r\nconst bmiMin = Math.min(...oneHotData.map(({ bmi }) => bmi));\r\nconst bmiRange = bmiMax - bmiMin;\r\n\r\nconst childrenMax = Math.max(...oneHotData.map(({ children }) => children));\r\n\r\nconst ageMax = Math.max(...oneHotData.map(({ age }) => age));\r\nconst ageMin = Math.min(...oneHotData.map(({ age }) => age));\r\nconst ageRange = ageMax - ageMin;\r\n\r\nconst chargesMax = Math.max(...oneHotData.map(({ charges }) => charges));\r\nconst chargesMin = Math.min(...oneHotData.map(({ charges }) => charges));\r\nconst chargesRange = chargesMax - chargesMin;\r\n\r\nconst prepData = oneHotData.map(({ bmi, children, age, charges, ...rest }) => ({\r\n  bmi: (bmi - bmiMin) / bmiRange,\r\n  children: children / childrenMax,\r\n  age: (age - ageMin) / ageRange,\r\n  charges: (charges - chargesMin) / chargesMax,\r\n  ...rest\r\n}));\r\nfrom(prepData.slice(0, 5));\r\n"
+                "const { getNormalizedMap, normalize } = require(\"./util/normalize\");\r\nconst columnsToNormalize = ['bmi', 'age', 'children', 'charges'];\r\nconst normalizedMap = getNormalizedMap(oneHotData, columnsToNormalize);\r\nconst prepData = normalize(oneHotData, columnsToNormalize, normalizedMap);\r\nfrom(prepData.slice(0, 5));\r\n"
             ],
             "outputs": [
                 {
@@ -179,7 +179,7 @@
                         {
                             "mime": "text/html",
                             "value": [
-                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">bmi</th><th style=\"text-align: right;\">children</th><th style=\"text-align: right;\">age</th><th style=\"text-align: right;\">charges</th><th style=\"text-align: right;\">sex_female</th><th style=\"text-align: right;\">sex_male</th><th style=\"text-align: right;\">smoker_yes</th><th style=\"text-align: right;\">smoker_no</th><th style=\"text-align: right;\">region_se</th><th style=\"text-align: right;\">region_sw</th><th style=\"text-align: right;\">region_ne</th><th style=\"text-align: right;\">region_nw</th></tr></thead><tbody><tr><td style=\"text-align: right;\">0.321227</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.021739</td><td style=\"text-align: right;\">0.247184</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.479150</td><td style=\"text-align: right;\">0.2</td><td style=\"text-align: right;\">0.000000</td><td style=\"text-align: right;\">0.009466</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.458434</td><td style=\"text-align: right;\">0.6</td><td style=\"text-align: right;\">0.217391</td><td style=\"text-align: right;\">0.052181</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.181464</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.326087</td><td style=\"text-align: right;\">0.327152</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td></tr><tr><td style=\"text-align: right;\">0.347592</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.304348</td><td style=\"text-align: right;\">0.043045</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td></tr></tbody></table>"
+                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">age</th><th style=\"text-align: right;\">bmi</th><th style=\"text-align: right;\">children</th><th style=\"text-align: right;\">charges</th><th style=\"text-align: right;\">sex_female</th><th style=\"text-align: right;\">sex_male</th><th style=\"text-align: right;\">smoker_yes</th><th style=\"text-align: right;\">smoker_no</th><th style=\"text-align: right;\">region_southwest</th><th style=\"text-align: right;\">region_southeast</th><th style=\"text-align: right;\">region_northwest</th><th style=\"text-align: right;\">region_northeast</th></tr></thead><tbody><tr><td style=\"text-align: right;\">0.021739</td><td style=\"text-align: right;\">0.321227</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.251611</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.000000</td><td style=\"text-align: right;\">0.479150</td><td style=\"text-align: right;\">0.2</td><td style=\"text-align: right;\">0.009636</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.217391</td><td style=\"text-align: right;\">0.458434</td><td style=\"text-align: right;\">0.6</td><td style=\"text-align: right;\">0.053115</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.326087</td><td style=\"text-align: right;\">0.181464</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.333010</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.304348</td><td style=\"text-align: right;\">0.347592</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.043816</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td></tr></tbody></table>"
                             ]
                         }
                     ]
@@ -215,7 +215,7 @@
                         {
                             "mime": "text/html",
                             "value": [
-                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">0</th><th style=\"text-align: right;\">1</th><th style=\"text-align: right;\">2</th><th style=\"text-align: right;\">3</th><th style=\"text-align: right;\">4</th><th style=\"text-align: right;\">5</th><th style=\"text-align: right;\">6</th><th style=\"text-align: right;\">7</th><th style=\"text-align: right;\">8</th><th style=\"text-align: right;\">9</th><th style=\"text-align: right;\">10</th></tr></thead><tbody><tr><td style=\"text-align: right;\">0.321227</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.021739</td><td style=\"text-align: right;\">0.247184</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.479150</td><td style=\"text-align: right;\">0.2</td><td style=\"text-align: right;\">0.000000</td><td style=\"text-align: right;\">0.009466</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.458434</td><td style=\"text-align: right;\">0.6</td><td style=\"text-align: right;\">0.217391</td><td style=\"text-align: right;\">0.052181</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.181464</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.326087</td><td style=\"text-align: right;\">0.327152</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.347592</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.304348</td><td style=\"text-align: right;\">0.043045</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr></tbody></table>"
+                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">0</th><th style=\"text-align: right;\">1</th><th style=\"text-align: right;\">2</th><th style=\"text-align: right;\">3</th><th style=\"text-align: right;\">4</th><th style=\"text-align: right;\">5</th><th style=\"text-align: right;\">6</th><th style=\"text-align: right;\">7</th><th style=\"text-align: right;\">8</th><th style=\"text-align: right;\">9</th><th style=\"text-align: right;\">10</th></tr></thead><tbody><tr><td style=\"text-align: right;\">0.021739</td><td style=\"text-align: right;\">0.321227</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.251611</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.000000</td><td style=\"text-align: right;\">0.479150</td><td style=\"text-align: right;\">0.2</td><td style=\"text-align: right;\">0.009636</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.217391</td><td style=\"text-align: right;\">0.458434</td><td style=\"text-align: right;\">0.6</td><td style=\"text-align: right;\">0.053115</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.326087</td><td style=\"text-align: right;\">0.181464</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.333010</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td></tr><tr><td style=\"text-align: right;\">0.304348</td><td style=\"text-align: right;\">0.347592</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.043816</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td></tr></tbody></table>"
                             ]
                         }
                     ]
@@ -245,11 +245,11 @@
                             "mime": "text/plain",
                             "value": [
                                 "[",
-                                "  \u001b[33m0.2471843233909008\u001b[39m,",
-                                "  \u001b[33m0.009466431680611202\u001b[39m,",
-                                "  \u001b[33m0.0521807396286911\u001b[39m,",
-                                "  \u001b[33m0.3271515867312116\u001b[39m,",
-                                "  \u001b[33m0.043044736967573\u001b[39m",
+                                "  \u001b[33m0.25161075660777127\u001b[39m,",
+                                "  \u001b[33m0.009635951037912947\u001b[39m,",
+                                "  \u001b[33m0.05311516199012881\u001b[39m,",
+                                "  \u001b[33m0.3330100272285438\u001b[39m,",
+                                "  \u001b[33m0.04381555710256758\u001b[39m",
                                 "]"
                             ]
                         }
@@ -286,7 +286,7 @@
                         {
                             "mime": "text/html",
                             "value": [
-                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">0</th><th style=\"text-align: right;\">1</th><th style=\"text-align: right;\">2</th><th style=\"text-align: right;\">3</th><th style=\"text-align: right;\">4</th><th style=\"text-align: right;\">5</th><th style=\"text-align: right;\">6</th><th style=\"text-align: right;\">7</th><th style=\"text-align: right;\">8</th><th style=\"text-align: right;\">9</th><th style=\"text-align: right;\">10</th></tr></thead><tbody><tr><td style=\"text-align: right;\">0.215765</td><td style=\"text-align: right;\">0.6</td><td style=\"text-align: right;\">0.217391</td><td style=\"text-align: right;\">0.259388</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.528383</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.086957</td><td style=\"text-align: right;\">0.540434</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.189131</td><td style=\"text-align: right;\">0.4</td><td style=\"text-align: right;\">0.260870</td><td style=\"text-align: right;\">0.254662</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.322034</td><td style=\"text-align: right;\">0.6</td><td style=\"text-align: right;\">0.021739</td><td style=\"text-align: right;\">0.277822</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.644875</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.956522</td><td style=\"text-align: right;\">0.185995</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr></tbody></table>"
+                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">0</th><th style=\"text-align: right;\">1</th><th style=\"text-align: right;\">2</th><th style=\"text-align: right;\">3</th><th style=\"text-align: right;\">4</th><th style=\"text-align: right;\">5</th><th style=\"text-align: right;\">6</th><th style=\"text-align: right;\">7</th><th style=\"text-align: right;\">8</th><th style=\"text-align: right;\">9</th><th style=\"text-align: right;\">10</th></tr></thead><tbody><tr><td style=\"text-align: right;\">0.000000</td><td style=\"text-align: right;\">0.610842</td><td style=\"text-align: right;\">0.4</td><td style=\"text-align: right;\">0.036258</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.021739</td><td style=\"text-align: right;\">0.342750</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.002108</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.608696</td><td style=\"text-align: right;\">0.107345</td><td style=\"text-align: right;\">0.4</td><td style=\"text-align: right;\">0.128845</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td></tr><tr><td style=\"text-align: right;\">0.326087</td><td style=\"text-align: right;\">0.331181</td><td style=\"text-align: right;\">0.2</td><td style=\"text-align: right;\">0.058385</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.391304</td><td style=\"text-align: right;\">0.324590</td><td style=\"text-align: right;\">0.2</td><td style=\"text-align: right;\">0.313682</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr></tbody></table>"
                             ]
                         }
                     ]
@@ -316,11 +316,11 @@
                             "mime": "text/plain",
                             "value": [
                                 "[",
-                                "  \u001b[33m0.25938778860643874\u001b[39m,",
-                                "  \u001b[33m0.5404339154599317\u001b[39m,",
-                                "  \u001b[33m0.2546618033903329\u001b[39m,",
-                                "  \u001b[33m0.27782202994186866\u001b[39m,",
-                                "  \u001b[33m0.1859953142879964\u001b[39m",
+                                "  \u001b[33m0.03625753989488202\u001b[39m,",
+                                "  \u001b[33m0.002107983206892879\u001b[39m,",
+                                "  \u001b[33m0.12884518588931881\u001b[39m,",
+                                "  \u001b[33m0.05838488137455913\u001b[39m,",
+                                "  \u001b[33m0.3136824804527001\u001b[39m",
                                 "]"
                             ]
                         }
@@ -452,7 +452,7 @@
                         {
                             "mime": "text/plain",
                             "value": [
-                                "\u001b[33m5\u001b[39m"
+                                "\u001b[33m3\u001b[39m"
                             ]
                         }
                     ]
@@ -488,7 +488,7 @@
                         {
                             "mime": "text/html",
                             "value": [
-                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">0</th><th style=\"text-align: right;\">1</th><th style=\"text-align: right;\">2</th><th style=\"text-align: right;\">trainCycles</th></tr></thead><tbody><tr><td style=\"text-align: right;\">0.001211</td><td style=\"text-align: right;\">0.000001</td><td style=\"text-align: right;\">0.728884</td><td style=\"text-align: right;\">5</td></tr><tr><td style=\"text-align: right;\">0.001211</td><td style=\"text-align: right;\">0.000001</td><td style=\"text-align: right;\">0.728884</td><td style=\"text-align: right;\">5</td></tr></tbody></table>"
+                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">0</th><th style=\"text-align: right;\">1</th><th style=\"text-align: right;\">trainCycles</th></tr></thead><tbody><tr><td style=\"text-align: right;\">0.006980</td><td style=\"text-align: right;\">0.000025</td><td style=\"text-align: right;\">2</td></tr><tr><td style=\"text-align: right;\">0.001848</td><td style=\"text-align: right;\">0.000003</td><td style=\"text-align: right;\">3</td></tr></tbody></table>"
                             ]
                         }
                     ]
@@ -506,7 +506,7 @@
                         {
                             "mime": "application/vnd.ts.notebook.plotly+json",
                             "value": {
-                                "requestId": "xfb012000ab9047bcaf3e5958b81d12d5",
+                                "requestId": "x670413be48d64065b7ca49e8f7aa4270",
                                 "type": "generatePlot",
                                 "ele": "myDiv",
                                 "data": [
@@ -514,18 +514,12 @@
                                         "x": [
                                             1,
                                             2,
-                                            3,
-                                            4,
-                                            5,
-                                            5
+                                            3
                                         ],
                                         "y": [
-                                            0.014613160863518715,
-                                            0.0016886241501197219,
-                                            0.0007274310337379575,
-                                            0.001502665807493031,
-                                            0.001211371854878962,
-                                            0.001211371854878962
+                                            0.03835440054535866,
+                                            0.006979793775826693,
+                                            0.0018476895056664944
                                         ],
                                         "mode": "lines+markers",
                                         "type": "scatter",
@@ -535,43 +529,16 @@
                                         "x": [
                                             1,
                                             2,
-                                            3,
-                                            4,
-                                            5,
-                                            5
+                                            3
                                         ],
                                         "y": [
-                                            0.00038285093614831567,
-                                            0.0000017352800796288648,
-                                            3.675146729165135e-7,
-                                            0.0000012368689112918219,
-                                            0.0000010024457424151478,
-                                            0.0000010024457424151478
+                                            0.0023758600000292063,
+                                            0.000025492112399660982,
+                                            0.0000025946180812752573
                                         ],
                                         "mode": "lines+markers",
                                         "type": "scatter",
                                         "name": "Error 1"
-                                    },
-                                    {
-                                        "x": [
-                                            1,
-                                            2,
-                                            3,
-                                            4,
-                                            5,
-                                            5
-                                        ],
-                                        "y": [
-                                            0.7313457131385803,
-                                            0.7286279201507568,
-                                            0.7294641733169556,
-                                            0.729714572429657,
-                                            0.7288840413093567,
-                                            0.7288840413093567
-                                        ],
-                                        "mode": "lines+markers",
-                                        "type": "scatter",
-                                        "name": "Error 2"
                                     }
                                 ],
                                 "layout": {
@@ -607,7 +574,7 @@
         {
             "language": "typescript",
             "source": [
-                "const xTestIndex = 0;\r\nconst pred = await model\r\n  .predict(tf.tensor2d([xTest[xTestIndex]]))\r\n  .squeeze()\r\n  .array();\r\nconst meanError = errors.slice(-1)[0][0];\r\nconst convertCharges = charges => charges * chargesRange + chargesMin;\r\nconsole.log(`from ${convertCharges(Math.max(0,pred - meanError))} to ${convertCharges(pred + meanError)} with mean=${convertCharges(pred)}`);\r\nconvertCharges(yTest[xTestIndex]);"
+                "const xTestIndex = 0;\r\nconst pred = await model\r\n  .predict(tf.tensor2d([xTest[xTestIndex]]))\r\n  .squeeze()\r\n  .array();\r\nconst meanError = errors.slice(-1)[0][0];\r\nconst { min: chargesMin, range: chargesRange } = normalizedMap.get('charges');\r\nconst round = (number, fixedDigits) => {\r\n  const divisor = Math.pow(10, fixedDigits);\r\n  return Math.round(number * divisor) / divisor;\r\n}\r\nconst convertCharges = charges => round(charges * chargesRange + chargesMin, 3);\r\n// console.log(\r\n  `range from ${convertCharges(Math.max(0, pred - meanError))} to ${convertCharges(\r\n    pred + meanError\r\n  )} with mean=${convertCharges(pred)} vs actual ${convertCharges(\r\n    yTest[xTestIndex]\r\n  )}`\r\n// );"
             ],
             "outputs": [
                 {
@@ -615,7 +582,6 @@
                         {
                             "mime": "application/vnd.code.notebook.stdout",
                             "value": [
-                                "from 35235.15590697389 to 35386.93729736932 with mean=35311.046602171606",
                                 "",
                                 ""
                             ]
@@ -627,7 +593,7 @@
                         {
                             "mime": "text/plain",
                             "value": [
-                                "\u001b[33m35470.13038371798\u001b[39m"
+                                "\u001b[32m'range from 13022.686 to 13254.196 with mean=13138.441 vs actual 13224.693'\u001b[39m"
                             ]
                         }
                     ]
