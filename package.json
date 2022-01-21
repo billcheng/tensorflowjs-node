@@ -1,0 +1,17 @@
+{
+  "name": "tensorflowjs-gpu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "module": "esnext",
+  "target": "es2017",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tensorflow/tfjs-node": "^3.13.0",
+    "arquero": "^4.8.8"
+  }
+}
