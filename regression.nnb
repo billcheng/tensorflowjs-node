@@ -23,6 +23,18 @@
                 {
                     "items": [
                         {
+                            "mime": "application/vnd.code.notebook.stderr",
+                            "value": [
+                                "2022-01-22 21:11:03.622984: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2\r",
+                                "To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.\r",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
                             "mime": "application/vnd.code.notebook.stdout",
                             "value": [
                                 "",
@@ -286,7 +298,7 @@
                         {
                             "mime": "text/html",
                             "value": [
-                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">0</th><th style=\"text-align: right;\">1</th><th style=\"text-align: right;\">2</th><th style=\"text-align: right;\">3</th><th style=\"text-align: right;\">4</th><th style=\"text-align: right;\">5</th><th style=\"text-align: right;\">6</th><th style=\"text-align: right;\">7</th><th style=\"text-align: right;\">8</th><th style=\"text-align: right;\">9</th><th style=\"text-align: right;\">10</th></tr></thead><tbody><tr><td style=\"text-align: right;\">0.000000</td><td style=\"text-align: right;\">0.610842</td><td style=\"text-align: right;\">0.4</td><td style=\"text-align: right;\">0.036258</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.021739</td><td style=\"text-align: right;\">0.342750</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.002108</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.608696</td><td style=\"text-align: right;\">0.107345</td><td style=\"text-align: right;\">0.4</td><td style=\"text-align: right;\">0.128845</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td></tr><tr><td style=\"text-align: right;\">0.326087</td><td style=\"text-align: right;\">0.331181</td><td style=\"text-align: right;\">0.2</td><td style=\"text-align: right;\">0.058385</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.391304</td><td style=\"text-align: right;\">0.324590</td><td style=\"text-align: right;\">0.2</td><td style=\"text-align: right;\">0.313682</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr></tbody></table>"
+                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">0</th><th style=\"text-align: right;\">1</th><th style=\"text-align: right;\">2</th><th style=\"text-align: right;\">3</th><th style=\"text-align: right;\">4</th><th style=\"text-align: right;\">5</th><th style=\"text-align: right;\">6</th><th style=\"text-align: right;\">7</th><th style=\"text-align: right;\">8</th><th style=\"text-align: right;\">9</th><th style=\"text-align: right;\">10</th></tr></thead><tbody><tr><td style=\"text-align: right;\">0.021739</td><td style=\"text-align: right;\">0.372343</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.009938</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.934783</td><td style=\"text-align: right;\">0.541835</td><td style=\"text-align: right;\">0.6</td><td style=\"text-align: right;\">0.428093</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.956522</td><td style=\"text-align: right;\">0.431934</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.711722</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">0.956522</td><td style=\"text-align: right;\">0.288808</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.430648</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td></tr><tr><td style=\"text-align: right;\">1.000000</td><td style=\"text-align: right;\">0.457493</td><td style=\"text-align: right;\">0.0</td><td style=\"text-align: right;\">0.216618</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">0</td><td style=\"text-align: right;\">1</td></tr></tbody></table>"
                             ]
                         }
                     ]
@@ -316,11 +328,11 @@
                             "mime": "text/plain",
                             "value": [
                                 "[",
-                                "  \u001b[33m0.03625753989488202\u001b[39m,",
-                                "  \u001b[33m0.002107983206892879\u001b[39m,",
-                                "  \u001b[33m0.12884518588931881\u001b[39m,",
-                                "  \u001b[33m0.05838488137455913\u001b[39m,",
-                                "  \u001b[33m0.3136824804527001\u001b[39m",
+                                "  \u001b[33m0.009937836696228261\u001b[39m,",
+                                "  \u001b[33m0.4280930990507739\u001b[39m,",
+                                "  \u001b[33m0.7117216763169125\u001b[39m,",
+                                "  \u001b[33m0.43064775449771353\u001b[39m,",
+                                "  \u001b[33m0.2166178556359343\u001b[39m",
                                 "]"
                             ]
                         }
@@ -338,7 +350,7 @@
         {
             "language": "typescript",
             "source": [
-                "const trainLen = Math.floor(xsDataset.length * 0.9)\r\nconst xTrain = xsDataset.slice(0, trainLen);\r\nconst yTrain = ysDataset.slice(0, trainLen);\r\nconst xTest = xsDataset.slice(trainLen);\r\nconst yTest = ysDataset.slice(trainLen);"
+                "const { sliceDataset } = require(\"./util/sliceDataset\");\r\n\r\nconst [xTrain, yTrain, xTest, yTest] = sliceDataset(xsDataset, ysDataset, 0.8);\r\n// const trainLen = Math.floor(xsDataset.length * 0.9)\r\n// const xTrain = xsDataset.slice(0, trainLen);\r\n// const yTrain = ysDataset.slice(0, trainLen);\r\n// const xTest = xsDataset.slice(trainLen);\r\n// const yTest = ysDataset.slice(trainLen);"
             ],
             "outputs": [
                 {
@@ -452,7 +464,7 @@
                         {
                             "mime": "text/plain",
                             "value": [
-                                "\u001b[33m3\u001b[39m"
+                                "\u001b[33m8\u001b[39m"
                             ]
                         }
                     ]
@@ -488,7 +500,7 @@
                         {
                             "mime": "text/html",
                             "value": [
-                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">0</th><th style=\"text-align: right;\">1</th><th style=\"text-align: right;\">trainCycles</th></tr></thead><tbody><tr><td style=\"text-align: right;\">0.006980</td><td style=\"text-align: right;\">0.000025</td><td style=\"text-align: right;\">2</td></tr><tr><td style=\"text-align: right;\">0.001848</td><td style=\"text-align: right;\">0.000003</td><td style=\"text-align: right;\">3</td></tr></tbody></table>"
+                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">0</th><th style=\"text-align: right;\">1</th><th style=\"text-align: right;\">trainCycles</th></tr></thead><tbody><tr><td style=\"text-align: right;\">0.002992</td><td style=\"text-align: right;\">0.000005</td><td style=\"text-align: right;\">7</td></tr><tr><td style=\"text-align: right;\">0.000180</td><td style=\"text-align: right;\">2.477439e-8</td><td style=\"text-align: right;\">8</td></tr></tbody></table>"
                             ]
                         }
                     ]
@@ -498,7 +510,7 @@
         {
             "language": "typescript",
             "source": [
-                "const { Plotly } = require(\"node-kernel\");\r\n\r\nconst xLabels = errors.map(({ trainCycles }) => trainCycles);\r\nconst plotData = Object.keys(errors[0])\r\n  .filter((key) => key !== \"trainCycles\")\r\n  .map((key) => ({\r\n    x: xLabels,\r\n    y: errors.map((error) => error[key]),\r\n    mode: \"lines+markers\",\r\n    type: \"scatter\",\r\n    name: `Error ${key}`\r\n  }));\r\n\r\nPlotly.newPlot(\"myDiv\", plotData, {\r\n  title: \"Error vs Train Epoch x 100\",\r\n  height: 400,\r\n  width: 600,\r\n  showlegend: true\r\n});\r\n"
+                "const { Plotly } = require(\"node-kernel\");\r\n\r\nconst xLabels = errors.map(({ trainCycles }) => trainCycles);\r\nconst plotData = Object.keys(errors[0])\r\n  .filter((key) => key !== \"trainCycles\")\r\n  .map((key) => ({\r\n    x: xLabels,\r\n    y: errors.map((error) => error[key]),\r\n    mode: \"lines+markers\",\r\n    type: \"scatter\",\r\n    name: `Metric #${key}`\r\n  }));\r\n\r\nPlotly.newPlot(\"myDiv\", plotData, {\r\n  title: \"Metrics vs Train Epoch x 100\",\r\n  height: 400,\r\n  width: 600,\r\n  showlegend: true\r\n});\r\n"
             ],
             "outputs": [
                 {
@@ -506,7 +518,7 @@
                         {
                             "mime": "application/vnd.ts.notebook.plotly+json",
                             "value": {
-                                "requestId": "x670413be48d64065b7ca49e8f7aa4270",
+                                "requestId": "xe793d6721e1f49b58ddcc26069617fd8",
                                 "type": "generatePlot",
                                 "ele": "myDiv",
                                 "data": [
@@ -514,35 +526,55 @@
                                         "x": [
                                             1,
                                             2,
-                                            3
+                                            3,
+                                            4,
+                                            5,
+                                            6,
+                                            7,
+                                            8
                                         ],
                                         "y": [
-                                            0.03835440054535866,
-                                            0.006979793775826693,
-                                            0.0018476895056664944
+                                            0.03291892260313034,
+                                            0.023305650800466537,
+                                            0.007332416716963053,
+                                            0.002176896668970585,
+                                            0.000542743771802634,
+                                            0.0009561763727106154,
+                                            0.0029924933332949877,
+                                            0.00018005694437306374
                                         ],
                                         "mode": "lines+markers",
                                         "type": "scatter",
-                                        "name": "Error 0"
+                                        "name": "Metric #0"
                                     },
                                     {
                                         "x": [
                                             1,
                                             2,
-                                            3
+                                            3,
+                                            4,
+                                            5,
+                                            6,
+                                            7,
+                                            8
                                         ],
                                         "y": [
-                                            0.0023758600000292063,
-                                            0.000025492112399660982,
-                                            0.0000025946180812752573
+                                            0.0023729654494673014,
+                                            0.0012887503253296018,
+                                            0.00011981748684775084,
+                                            0.0000032392360935773468,
+                                            2.1264484928451566e-7,
+                                            7.307476153073367e-7,
+                                            0.000004693917617260013,
+                                            2.4774392315407567e-8
                                         ],
                                         "mode": "lines+markers",
                                         "type": "scatter",
-                                        "name": "Error 1"
+                                        "name": "Metric #1"
                                     }
                                 ],
                                 "layout": {
-                                    "title": "Error vs Train Epoch x 100",
+                                    "title": "Metrics vs Train Epoch x 100",
                                     "height": 400,
                                     "width": 600,
                                     "showlegend": true
@@ -574,7 +606,7 @@
         {
             "language": "typescript",
             "source": [
-                "const xTestIndex = 0;\r\nconst pred = await model\r\n  .predict(tf.tensor2d([xTest[xTestIndex]]))\r\n  .squeeze()\r\n  .array();\r\nconst meanError = errors.slice(-1)[0][0];\r\nconst { min: chargesMin, range: chargesRange } = normalizedMap.get('charges');\r\nconst round = (number, fixedDigits) => {\r\n  const divisor = Math.pow(10, fixedDigits);\r\n  return Math.round(number * divisor) / divisor;\r\n}\r\nconst convertCharges = charges => round(charges * chargesRange + chargesMin, 3);\r\n// console.log(\r\n  `range from ${convertCharges(Math.max(0, pred - meanError))} to ${convertCharges(\r\n    pred + meanError\r\n  )} with mean=${convertCharges(pred)} vs actual ${convertCharges(\r\n    yTest[xTestIndex]\r\n  )}`\r\n// );"
+                "const xTestIndex = 16;\r\nconst pred = await model\r\n  .predict(tf.tensor2d([xTest[xTestIndex]]))\r\n  .squeeze()\r\n  .array();\r\nconst meanError = errors.slice(-1)[0][0];\r\nconst { min: chargesMin, range: chargesRange } = normalizedMap.get('charges');\r\nconst round = (number, fixedDigits) => {\r\n  const divisor = Math.pow(10, fixedDigits);\r\n  return Math.round(number * divisor) / divisor;\r\n}\r\nconst convertCharges = charges => round(charges * chargesRange + chargesMin, 3);\r\n// console.log(\r\n  `range from ${convertCharges(Math.max(0, pred - meanError))} to ${convertCharges(\r\n    pred + meanError\r\n  )} with mean=${convertCharges(pred)} vs actual ${convertCharges(\r\n    yTest[xTestIndex]\r\n  )}`\r\n// );"
             ],
             "outputs": [
                 {
@@ -593,7 +625,7 @@
                         {
                             "mime": "text/plain",
                             "value": [
-                                "\u001b[32m'range from 13022.686 to 13254.196 with mean=13138.441 vs actual 13224.693'\u001b[39m"
+                                "\u001b[32m'range from 2318.622 to 2341.183 with mean=2329.902 vs actual 2322.622'\u001b[39m"
                             ]
                         }
                     ]
