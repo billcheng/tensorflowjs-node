@@ -1,4 +1,4 @@
-function oneHot(array, columnNames) {
+function oneHot(array, columnNames, zeroEncoder) {
   const map = new Map(
     columnNames.map((columnName) => {
       const set = new Set(array.map((row) => row[columnName]));
@@ -14,7 +14,8 @@ function oneHot(array, columnNames) {
       return uniqueValues.reduce(
         (r, uniqueValue) => ({
           ...r,
-          [`${columnName}_${uniqueValue}`]: uniqueValue == old ? 1 : 0
+          [`${columnName}_${uniqueValue}`]:
+            uniqueValue == old ? 1 : zeroEncoder ?? 0
         }),
         rest
       );

@@ -1,0 +1,461 @@
+{
+    "cells": [
+        {
+            "language": "markdown",
+            "source": [
+                "# Classification"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Intro"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "| Hyperparameters | Binary Classification | Multilabel Binary Classification | Multiclass classification |\r\n|-|-|-|-|\r\n| Input shape | Same as # of features | Same as # of features | Same as # of features |\r\n| Hidden layers | Problem specific, minimum = 1, max = unlimited | Sames as binary classification | Sames as binary classification |\r\n| # neurons per hidden layer | Problem specific, generally 10 to 100 | Sames as binary classification | Same as binary classification |\r\n| Hidden activation | Usually ReLU | Usually ReLU | Usually ReLU |\r\n| Output shape | 1 | 1 per label | 1 per class |\r\n| Output layer activation | sigmoid | sigmoid | softmax |\r\n| Loss function | Cross entropy | Cross entropy | Cross entropy |\r\n| Optimizer | SGD, Adam | SGD, Adam | SGD, Adam |\r\n| Learning rate| Adam 1e-4 | Adam 1e-4 | Adam 1e-4 |\r\n\r\nUse the hyperparameters above as a starting point."
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Import Tensorflow"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "var tf = require(\"@tensorflow/tfjs-node\") as typeof import(\"@tensorflow/tfjs-node\");\r\n\r\ntf.version"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stderr",
+                            "value": [
+                                "2022-01-23 23:12:30.593090: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2\r",
+                                "To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.\r",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "{",
+                                "  \u001b[32m'tfjs-core'\u001b[39m: \u001b[32m'3.13.0'\u001b[39m,",
+                                "  \u001b[32m'tfjs-backend-cpu'\u001b[39m: \u001b[32m'3.13.0'\u001b[39m,",
+                                "  \u001b[32m'tfjs-backend-webgl'\u001b[39m: \u001b[32m'3.13.0'\u001b[39m,",
+                                "  \u001b[32m'tfjs-data'\u001b[39m: \u001b[32m'3.13.0'\u001b[39m,",
+                                "  \u001b[32m'tfjs-layers'\u001b[39m: \u001b[32m'3.13.0'\u001b[39m,",
+                                "  \u001b[32m'tfjs-converter'\u001b[39m: \u001b[32m'3.13.0'\u001b[39m,",
+                                "  tfjs: \u001b[32m'3.13.0'\u001b[39m,",
+                                "  \u001b[32m'tfjs-node'\u001b[39m: \u001b[32m'3.13.0'\u001b[39m",
+                                "}"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Dataset"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Convert ubyte to array"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "// const convert = require(\"./util/fashion-mnist-to-array\");\r\n\r\n// await convert();"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Load train dataset"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const loadJSON = require(\"./util/loadjson\");\r\n\r\nfunction load(datasetName, labelNumber, xs, ys) {\r\n  const x = loadJSON(\r\n    `./data/digits/fashion-mnist/${datasetName}-${labelNumber}.json`\r\n  );\r\n  const y = Array(x.length).fill(labelNumber);\r\n  xs.push(...x);\r\n  ys.push(...y);\r\n}"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const xTrain = [];\r\nconst yTrain = [];\r\nconst xTest = [];\r\nconst yTest = [];\r\ntry {\r\n  for (let label = 0; label <= 9; label++) {\r\n    console.log(`Loading training dataset with label ${label}...`);\r\n    load(\"training\", label, xTrain, yTrain);\r\n    console.log(`Loading test dataset with label ${label}...`);\r\n    load(\"test\", label, xTest, yTest);\r\n  }\r\n} catch (e) {\r\n  console.error(e);\r\n}\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "Loading training dataset with label 0...",
+                                "Loading training dataset with label 1...",
+                                "Loading training dataset with label 2...",
+                                "Loading training dataset with label 3...",
+                                "Loading training dataset with label 4...",
+                                "Loading training dataset with label 5...",
+                                "Loading training dataset with label 6...",
+                                "Loading training dataset with label 7...",
+                                "Loading training dataset with label 8...",
+                                "Loading training dataset with label 9...",
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Visualize dataset"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const showGrayscaleImage = require(\"./util/showGrayscaleImage\");\r\nshowGrayscaleImage(xTest[0], 28, 28);"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "image/png",
+                            "value": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABmJLR0QA/wD/AP+gvaeTAAAEc0lEQVRIiaWWTWsTXRTHfzNz5yVJQ1IDYqgy4iZSBEUEXVjE4sKVfgi37ty4KTxfQPwOutKV4AdQN75sfNuIuAhCVWyLdZqZdJJ7Z64LvddJmtbqcyBkcufO+Z3zP+fcCYD+0+fMmTP68ePH+saNG3phYUE7jqMdx9FxHOvbt2/rhw8f6qNHj/7RD6CdXxc7zPd9rl+/zuXLl4njmM+fP9Pr9YiiiM3NTYqioNvt8u7dO4bDIXEc8+LFCx48eMC9e/dmuQRgJvD06dOsrKzQ6XSQUlIUBVprXNdlbm6OLMtQSlGr1cjzHM/zkFIihCAIAubn51laWiJJkv0Bnz17hpSSwWBAGIa4rovWGq01QgjCMKQsS8qytMEURYFSitFoZIO6cuXKDqA7vXDq1CmklEgpiaII3/fR+ndMSinyPGc8HiOlxHEce991Xebn55FS0mg0WFxc3AH0gP+qC/fv3+fYsWOkaWqzcF2XwWCAlBKtNY7j2IzyPEcphRAC3/dtEJ7nUa/XefLkyd6SfvjwgU6nQ7/ftzXIsoxms8nhw4fJsoxWq0UYhmRZRhiGrK+vs7a2ZtWIoojhcIgQguXl5QmgqP5YXl6m3W4zGAwoisJmt7i4yGg04uPHj6yurhJFEQcPHiRJEuI4Jk1Tzp49y+vXrxmPxwCUZUmappw8eZI3b97MBl68eJEoivj27RtKKbTW9Ho9Xr58aesGIITg+/fvbG5uorXm+fPnJEnC+fPnefr0KUopgiBgbm6OS5cuTQAnavjo0SO2tra4cOECJ06coN/v43ke6+vrvHr1iqtXr3LkyBHiOKbX63HgwAFarRZJknDu3DmSJCFNUxYWFgjDkJWVFe7evbt3DY1du3aNmzdv0u/3OX78OLVaje3tbVZXV22j1Ot1Wq0WzWaTIAh4+/Yt3W6XO3fucOvWrVluJ4GO4+A4DmVZ2gba2NhgPB7TaDTY2NggCAJc18XzPEajEYcOHaLT6aCUYjgcsra2xtLS0k/5PI+iKCaAE3NYnTfzgNYaz/PY3t6m2WwihLBtL6Wk3W7TbDZnPj8Ng6mmmX7IzB38bJSyLC2sKAoajQafPn1CiJ9uRqMRaZr+lq9yKOwKnLXJcRz77Xme3WNm8f3797iui+u6du+sjGHG0VY1k9E00DjXWhMEAQDD4XBHsFX4rhlWrSgK68TU0jjRWtuAfN+3e/9ke2ZYlWnambln4CYws/a/gObacZxdHbquS1mWVuJ/ApqozZkK2OvqeJhAtNbU6/W/A05LZ2ZpWlrTHNNye563J3DPORRCTNSnem86cwM3B/y+gVUz0ZpBN0deNQuzZkwp9W/ARqNh3xa+71vHZVlOZG0d/VJj1rDvCwi/u7QsS6SUdt0Ap+sJUKvV9gTu2qWmRgB5nltJq51rMtJa2xd2NbB9ZVg9xsIwJAgCHMdBKYVSyr6+yrJECGElNyPSbrf/DmjkybKMr1+/4vs+aZrS7XatXOZfWhiGCCHIsow8z9na2uLLly97An8A/saPCvrOjFIAAAAASUVORK5CYII="
+                        },
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABmJLR0QA/wD/AP+gvaeTAAAEc0lEQVRIiaWWTWsTXRTHfzNz5yVJQ1IDYqgy4iZSBEUEXVjE4sKVfgi37ty4KTxfQPwOutKV4AdQN75sfNuIuAhCVWyLdZqZdJJ7Z64LvddJmtbqcyBkcufO+Z3zP+fcCYD+0+fMmTP68ePH+saNG3phYUE7jqMdx9FxHOvbt2/rhw8f6qNHj/7RD6CdXxc7zPd9rl+/zuXLl4njmM+fP9Pr9YiiiM3NTYqioNvt8u7dO4bDIXEc8+LFCx48eMC9e/dmuQRgJvD06dOsrKzQ6XSQUlIUBVprXNdlbm6OLMtQSlGr1cjzHM/zkFIihCAIAubn51laWiJJkv0Bnz17hpSSwWBAGIa4rovWGq01QgjCMKQsS8qytMEURYFSitFoZIO6cuXKDqA7vXDq1CmklEgpiaII3/fR+ndMSinyPGc8HiOlxHEce991Xebn55FS0mg0WFxc3AH0gP+qC/fv3+fYsWOkaWqzcF2XwWCAlBKtNY7j2IzyPEcphRAC3/dtEJ7nUa/XefLkyd6SfvjwgU6nQ7/ftzXIsoxms8nhw4fJsoxWq0UYhmRZRhiGrK+vs7a2ZtWIoojhcIgQguXl5QmgqP5YXl6m3W4zGAwoisJmt7i4yGg04uPHj6yurhJFEQcPHiRJEuI4Jk1Tzp49y+vXrxmPxwCUZUmappw8eZI3b97MBl68eJEoivj27RtKKbTW9Ho9Xr58aesGIITg+/fvbG5uorXm+fPnJEnC+fPnefr0KUopgiBgbm6OS5cuTQAnavjo0SO2tra4cOECJ06coN/v43ke6+vrvHr1iqtXr3LkyBHiOKbX63HgwAFarRZJknDu3DmSJCFNUxYWFgjDkJWVFe7evbt3DY1du3aNmzdv0u/3OX78OLVaje3tbVZXV22j1Ot1Wq0WzWaTIAh4+/Yt3W6XO3fucOvWrVluJ4GO4+A4DmVZ2gba2NhgPB7TaDTY2NggCAJc18XzPEajEYcOHaLT6aCUYjgcsra2xtLS0k/5PI+iKCaAE3NYnTfzgNYaz/PY3t6m2WwihLBtL6Wk3W7TbDZnPj8Ng6mmmX7IzB38bJSyLC2sKAoajQafPn1CiJ9uRqMRaZr+lq9yKOwKnLXJcRz77Xme3WNm8f3797iui+u6du+sjGHG0VY1k9E00DjXWhMEAQDD4XBHsFX4rhlWrSgK68TU0jjRWtuAfN+3e/9ke2ZYlWnambln4CYws/a/gObacZxdHbquS1mWVuJ/ApqozZkK2OvqeJhAtNbU6/W/A05LZ2ZpWlrTHNNye563J3DPORRCTNSnem86cwM3B/y+gVUz0ZpBN0deNQuzZkwp9W/ARqNh3xa+71vHZVlOZG0d/VJj1rDvCwi/u7QsS6SUdt0Ap+sJUKvV9gTu2qWmRgB5nltJq51rMtJa2xd2NbB9ZVg9xsIwJAgCHMdBKYVSyr6+yrJECGElNyPSbrf/DmjkybKMr1+/4vs+aZrS7XatXOZfWhiGCCHIsow8z9na2uLLly97An8A/saPCvrOjFIAAAAASUVORK5CYII="
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "showGrayscaleImage(xTrain[0], 28, 28)"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "image/png",
+                            "value": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABmJLR0QA/wD/AP+gvaeTAAAEzElEQVRIiZ2Wv4sTTxjGPzM7ibuJJDk9CJcrTvAHHNwpmgO5QgQrGwtBsNDOykKrgH+BIFhYWImN2lpop4WlHHKFVwie3nGNCbnCHJ6XnMnuzs58C7+zbHLJ94cvBLKzu+/zPs/7zDsrAMtICCGwdnh5fn6ex48f8/LlS9bW1oiiiDiOWVhY4OrVq2xtbfHw4UN2d3dH0x0I635CCJu9Pnv2rH3w4IHd3Ny0X758sa1Wy3Y6HTsaX79+tevr69YYY7e3t+2zZ8/s4uLiUK4UYxzDUqnEixcvOH36NFJKer0e/X6fOI4xxqCUolwus7+/jzFmSA3f9wmCgHw+z/v377l58+aweuMA3717x9zcHDs7OymA1hohBABSSuI4RkqZXo9ryczMDJcvX2Z9fT29p0bB6vU6c3NzdDodlFJ4nkcQBNRqNQqFQgqmlCJJEoQQ5HI5tNZ0u11arRZaawCSJOHWrVs0Go3JDBuNBnfv3qXT6WCMwfM8kiThyZMntNttWq0WtVqN7e3tFDyfz3P48GHOnTvHnTt30mJLpRJKKY4dO5bmH9YCuHbtGlprPM/DWovv+2itefr0KXEcU6/XefPmDefPnycIAqrVKtPT0+zt7fHo0SOSJEEphe/7/Pr1i1qtxqlTpyZLeubMGZrNJp7ncejQIeC3iQDevn3L/v4+8/PzNBoNXr16xZUrV1BK8fHjR+r1OlprisUiSZJgjOHbt28sLy+zsbFxEHBxcZHv37+jtUZKmfZvZ2cHgIWFBcIwZGZmhvv37yOEII5jhBAsLy8D0G63mZ2dxRiDMYbBYMCFCxd4/vz5QcB79+4RBAG9Xo8kSQiCgMFggNaapaUljh49ypEjR8jlclSrVeI4ZjAYkM/nqVQqXL9+nampKfr9PuVyGSEE+XyepaWl8ZKurKxQrVY5ceIEpVKJYrHI5uYmSZLw4cOHtOokSfA8D6UUQgiSJEFKSbfbZWNjg2KxiOd5SClpt9u8fv16sksBpqamOHnyJLdv3+bixYs0m03K5TK7u7vkcjk8zxt6XgiBlJLBYEC5XObTp0/cuHFjNO140wD8+PGD1dVVwjDk0qVLWGvJ5/Np5caYFEgIgTEG3/eJogjf91lZWRkLBmO2hdMdwFpLt9tNQdwIcxNnNBxzN8A9zzvw7AFAay1xHAOwtbXFz58/UUoRhmF6P5vE/Q/DkFwuB8De3t7v5FIeOHUOALoHAfr9PlEUYa1Nh4Gbk05OKSVSSqIoGjLRpBgL6KpyjrTWYq1FSpkCuv8O1FqLMQYpZdrjUXYTAbMxOzuLECIddQ5knCpuCIy6+D8zBFJ5nJEcoAN1LnUnhrU27eUfMRwMBniel44759asc5VS6XEFUKlU/h/DbLh+ODbpi3/30DFxvdVaEwTBRIZjN/5QRZnTPJtgFNAZR2tNoVCYmG8s4GhlWRNk96Fbd2tSynTOTiQwbjErXRRFQyYxxgwN7NFCsoB/ZBoYnhhuo2ddOon5f2aYrazdbgOgtSYMQ8IwJI5joihKr91HsXv3nxj+q2kqlQrFYhGlFNPT0ylDty9dMZ7n0Ww2KRQKHD9+PFUj6/KJgNlP/bW1NT5//pyehS5Rr9dLZdRaY4whjmMqlQqrq6sAB8AA/gJFxJ+265JxCQAAAABJRU5ErkJggg=="
+                        },
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABmJLR0QA/wD/AP+gvaeTAAAEzElEQVRIiZ2Wv4sTTxjGPzM7ibuJJDk9CJcrTvAHHNwpmgO5QgQrGwtBsNDOykKrgH+BIFhYWImN2lpop4WlHHKFVwie3nGNCbnCHJ6XnMnuzs58C7+zbHLJ94cvBLKzu+/zPs/7zDsrAMtICCGwdnh5fn6ex48f8/LlS9bW1oiiiDiOWVhY4OrVq2xtbfHw4UN2d3dH0x0I635CCJu9Pnv2rH3w4IHd3Ny0X758sa1Wy3Y6HTsaX79+tevr69YYY7e3t+2zZ8/s4uLiUK4UYxzDUqnEixcvOH36NFJKer0e/X6fOI4xxqCUolwus7+/jzFmSA3f9wmCgHw+z/v377l58+aweuMA3717x9zcHDs7OymA1hohBABSSuI4RkqZXo9ryczMDJcvX2Z9fT29p0bB6vU6c3NzdDodlFJ4nkcQBNRqNQqFQgqmlCJJEoQQ5HI5tNZ0u11arRZaawCSJOHWrVs0Go3JDBuNBnfv3qXT6WCMwfM8kiThyZMntNttWq0WtVqN7e3tFDyfz3P48GHOnTvHnTt30mJLpRJKKY4dO5bmH9YCuHbtGlprPM/DWovv+2itefr0KXEcU6/XefPmDefPnycIAqrVKtPT0+zt7fHo0SOSJEEphe/7/Pr1i1qtxqlTpyZLeubMGZrNJp7ncejQIeC3iQDevn3L/v4+8/PzNBoNXr16xZUrV1BK8fHjR+r1OlprisUiSZJgjOHbt28sLy+zsbFxEHBxcZHv37+jtUZKmfZvZ2cHgIWFBcIwZGZmhvv37yOEII5jhBAsLy8D0G63mZ2dxRiDMYbBYMCFCxd4/vz5QcB79+4RBAG9Xo8kSQiCgMFggNaapaUljh49ypEjR8jlclSrVeI4ZjAYkM/nqVQqXL9+nampKfr9PuVyGSEE+XyepaWl8ZKurKxQrVY5ceIEpVKJYrHI5uYmSZLw4cOHtOokSfA8D6UUQgiSJEFKSbfbZWNjg2KxiOd5SClpt9u8fv16sksBpqamOHnyJLdv3+bixYs0m03K5TK7u7vkcjk8zxt6XgiBlJLBYEC5XObTp0/cuHFjNO140wD8+PGD1dVVwjDk0qVLWGvJ5/Np5caYFEgIgTEG3/eJogjf91lZWRkLBmO2hdMdwFpLt9tNQdwIcxNnNBxzN8A9zzvw7AFAay1xHAOwtbXFz58/UUoRhmF6P5vE/Q/DkFwuB8De3t7v5FIeOHUOALoHAfr9PlEUYa1Nh4Gbk05OKSVSSqIoGjLRpBgL6KpyjrTWYq1FSpkCuv8O1FqLMQYpZdrjUXYTAbMxOzuLECIddQ5knCpuCIy6+D8zBFJ5nJEcoAN1LnUnhrU27eUfMRwMBniel44759asc5VS6XEFUKlU/h/DbLh+ODbpi3/30DFxvdVaEwTBRIZjN/5QRZnTPJtgFNAZR2tNoVCYmG8s4GhlWRNk96Fbd2tSynTOTiQwbjErXRRFQyYxxgwN7NFCsoB/ZBoYnhhuo2ddOon5f2aYrazdbgOgtSYMQ8IwJI5joihKr91HsXv3nxj+q2kqlQrFYhGlFNPT0ylDty9dMZ7n0Ww2KRQKHD9+PFUj6/KJgNlP/bW1NT5//pyehS5Rr9dLZdRaY4whjmMqlQqrq6sAB8AA/gJFxJ+265JxCQAAAABJRU5ErkJggg=="
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Model"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Create Model"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const numberOfFeatures = xTrain[0].length;\r\nconst errors = [];\r\nlet cycle = 0;\r\n\r\nconst model = tf.sequential({\r\n  layers: [\r\n    tf.layers.dense({\r\n      units: 6,\r\n      name: \"inputLayer\",\r\n      activation: \"relu\",\r\n      inputShape: [numberOfFeatures]\r\n    }),\r\n    // tf.layers.dense({ units: 16, activation: \"relu\" }),\r\n    tf.layers.dense({ units: 2, activation: \"softmax\", name: \"outputLayer\" })\r\n  ]\r\n});\r\n\r\nmodel.compile({\r\n  optimizer: tf.train.adam(0.001),\r\n  // optimizer: tf.train.sgd(0.01),\r\n  loss: tf.losses.softmaxCrossEntropy,\r\n  metrics: [\"accuracy\"]\r\n});\r\n\r\nnumberOfFeatures;"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "\u001b[33m8\u001b[39m"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Training"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "try {\r\n  cycle += 1;\r\n  const trainResult = await model.fit(tf.tensor2d(xTrain), tf.tensor2d(yTrain), {\r\n    epochs: 100,\r\n    verbose: 0,\r\n    // shuffle: true,\r\n    // validationSplit: 0.9\r\n  });\r\n} catch (e) {\r\n  console.error(e)\r\n}"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Evaluate"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const currentErrors = await model.evaluate(\r\n  tf.tensor2d(xTest),\r\n  tf.tensor2d(yTest)\r\n);\r\nif (Array.isArray(currentErrors)) {\r\n  const ce = await Promise.all(currentErrors.map((e) => e.array()));\r\n\r\n  const obj = ce.reduce((r, c, i) => ({ [i]: c, ...r }), { cycle });\r\n  errors.push(obj);\r\n} else {\r\n  errors.push({ cycle, 0: await currentErrors.array() });\r\n}\r\nfrom(errors.slice(-2));\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "text/html",
+                            "value": [
+                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">0</th><th style=\"text-align: right;\">1</th><th style=\"text-align: right;\">cycle</th></tr></thead><tbody><tr><td style=\"text-align: right;\">0.585745</td><td style=\"text-align: right;\">0.668831</td><td style=\"text-align: right;\">1</td></tr></tbody></table>"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const { Plotly } = require(\"node-kernel\");\r\n\r\nconst xLabels = errors.map(({ cycle }) => cycle);\r\nconst plotData = Object.keys(errors[0])\r\n  .filter((key) => key !== \"cycle\")\r\n  .map((key) => ({\r\n    x: xLabels,\r\n    y: errors.map((error) => error[key]),\r\n    mode: \"lines+markers\",\r\n    type: \"scatter\",\r\n    name: `Metric #${key}`\r\n  }));\r\n\r\nPlotly.newPlot(\"myDiv\", plotData, {\r\n  title: \"Metrics vs Train Epoch x 100\",\r\n  height: 400,\r\n  width: 600,\r\n  showlegend: true\r\n});\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.ts.notebook.plotly+json",
+                            "value": {
+                                "requestId": "xbfdecbc7d36246e485beacd9644eee5a",
+                                "type": "generatePlot",
+                                "ele": "myDiv",
+                                "data": [
+                                    {
+                                        "x": [
+                                            1,
+                                            2,
+                                            3,
+                                            4,
+                                            5
+                                        ],
+                                        "y": [
+                                            -0.28234797716140747,
+                                            -0.4082781672477722,
+                                            -0.4462427496910095,
+                                            -0.4551856219768524,
+                                            -0.4590561091899872
+                                        ],
+                                        "mode": "lines+markers",
+                                        "type": "scatter",
+                                        "name": "Metric #0"
+                                    },
+                                    {
+                                        "x": [
+                                            1,
+                                            2,
+                                            3,
+                                            4,
+                                            5
+                                        ],
+                                        "y": [
+                                            0.649350643157959,
+                                            0.7402597665786743,
+                                            0.7272727489471436,
+                                            0.7402597665786743,
+                                            0.7337662577629089
+                                        ],
+                                        "mode": "lines+markers",
+                                        "type": "scatter",
+                                        "name": "Metric #1"
+                                    }
+                                ],
+                                "layout": {
+                                    "title": "Metrics vs Train Epoch x 100",
+                                    "height": 400,
+                                    "width": 600,
+                                    "showlegend": true
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Prediction"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const testIndex = 0;\r\nconst pred = await model\r\n  .predict(tf.tensor2d([xTest[testIndex]]))\r\n  .squeeze()\r\n  .round()\r\n  .array();\r\n`${JSON.stringify(xTest[testIndex])} => [${pred}] vs [${yTest[testIndex]}]`"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "\u001b[32m'[0,0.8994974874371859,0.4098360655737705,0.36363636363636365,0.1879432624113475,0.5633383010432191,0.1609735269000854,0.016666666666666666] => [1,0] vs [1,-1]'\u001b[39m"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
