@@ -1,0 +1,641 @@
+{
+    "cells": [
+        {
+            "language": "markdown",
+            "source": [
+                "# Classification"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Intro"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "| Hyperparameters | Binary Classification | Multilabel Binary Classification | Multiclass classification |\r\n|-|-|-|-|\r\n| Input shape | Same as # of features | Same as # of features | Same as # of features |\r\n| Hidden layers | Problem specific, minimum = 1, max = unlimited | Sames as binary classification | Sames as binary classification |\r\n| # neurons per hidden layer | Problem specific, generally 10 to 100 | Sames as binary classification | Same as binary classification |\r\n| Hidden activation | Usually ReLU | Usually ReLU | Usually ReLU |\r\n| Output shape | 1 | 1 per label | 1 per class |\r\n| Output layer activation | sigmoid | sigmoid | softmax |\r\n| Loss function | Cross entropy | Cross entropy | Cross entropy |\r\n| Optimizer | SGD, Adam | SGD, Adam | SGD, Adam |\r\n| Learning rate| Adam 1e-4 | Adam 1e-4 | Adam 1e-4 |\r\n\r\nUse the hyperparameters above as a starting point."
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Import Tensorflow"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "var tf = require(\"@tensorflow/tfjs-node\") as typeof import(\"@tensorflow/tfjs-node\");\r\n\r\ntf.version"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stderr",
+                            "value": [
+                                "2022-01-24 08:44:07.816936: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2\r",
+                                "To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.\r",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "{",
+                                "  \u001b[32m'tfjs-core'\u001b[39m: \u001b[32m'3.13.0'\u001b[39m,",
+                                "  \u001b[32m'tfjs-backend-cpu'\u001b[39m: \u001b[32m'3.13.0'\u001b[39m,",
+                                "  \u001b[32m'tfjs-backend-webgl'\u001b[39m: \u001b[32m'3.13.0'\u001b[39m,",
+                                "  \u001b[32m'tfjs-data'\u001b[39m: \u001b[32m'3.13.0'\u001b[39m,",
+                                "  \u001b[32m'tfjs-layers'\u001b[39m: \u001b[32m'3.13.0'\u001b[39m,",
+                                "  \u001b[32m'tfjs-converter'\u001b[39m: \u001b[32m'3.13.0'\u001b[39m,",
+                                "  tfjs: \u001b[32m'3.13.0'\u001b[39m,",
+                                "  \u001b[32m'tfjs-node'\u001b[39m: \u001b[32m'3.13.0'\u001b[39m",
+                                "}"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Dataset"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Convert ubyte to array"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "// const convert = require(\"./util/fashion-mnist-to-array\");\r\n\r\n// await convert();"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Load train dataset"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const loadJSON = require(\"./util/loadjson\");\r\n\r\nfunction load(datasetName, labelNumber, xs, ys) {\r\n  const x = loadJSON(\r\n    `./data/digits/fashion-mnist/${datasetName}-${labelNumber}.json`\r\n  );\r\n  const y = Array(x.length).fill(labelNumber);\r\n  xs.push(...x);\r\n  ys.push(...y);\r\n}"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const xTrain = [];\r\nconst yTrain = [];\r\nconst xTest = [];\r\nconst yTest = [];\r\ntry {\r\n  for (let label = 0; label <= 9; label++) {\r\n    console.log(`Loading training & test datasets with label ${label}...`);\r\n    load(\"training\", label, xTrain, yTrain);\r\n    load(\"test\", label, xTest, yTest);\r\n  }\r\n} catch (e) {\r\n  console.error(e);\r\n}\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "Loading training & test datasets with label 0...",
+                                "Loading training & test datasets with label 1...",
+                                "Loading training & test datasets with label 2...",
+                                "Loading training & test datasets with label 3...",
+                                "Loading training & test datasets with label 4...",
+                                "Loading training & test datasets with label 5...",
+                                "Loading training & test datasets with label 6...",
+                                "Loading training & test datasets with label 7...",
+                                "Loading training & test datasets with label 8...",
+                                "Loading training & test datasets with label 9...",
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Output labels"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const outputLabels = [\r\n  \"T-shirt/top\",\r\n  \"Trouser\",\r\n  \"Pullover\",\r\n  \"Dress\",\r\n  \"Coat\",\r\n  \"Sandal\",\r\n  \"Shirt\",\r\n  \"Sneaker\",\r\n  \"Bag\",\r\n  \"Ankle boot\",\r\n];\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Visualize dataset"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const showGrayscaleImage = require(\"./util/showGrayscaleImage\");\r\nshowGrayscaleImage(xTest[5000], 28, 28);"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "image/png",
+                            "value": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABmJLR0QA/wD/AP+gvaeTAAABx0lEQVRIie2VMWsiQRTHfzOzarAIi4YowUbWWKUQQRCRFCGVjX6P5BNY6NVWfg1b+1hYBULsTSDbCGsaXZZsIpvN7FV6d2C46nJwt//2zZsf839v3hNAxBdKfiUsBsbAGPifAhXw7bNgNpvl7OyM09NTzs/PUUrR6/VYr9copRBCsNlsAJBSEkU/pqQQYu+dxjawPayU4uPjg4uLC66vr7Esi3Q6TRAEPD09kcvlmE6nXF1dcXl5Sbvd5vb2Fq01AMlkkiAIfoH/LCGEiKSUu4QoiqhWq/T7febzObPZjPv7e1zXpdVqUa/XKZVKvLy8YFkW2WwW27YZDAaMx+PfWirYsy201hwdHbFarT5NLBaLdLtdKpUKyWQS3/cZjUY4jkMmk0EIgZRyZ30ikWAymWAUCgXK5TKvr6+8vb2htWY4HJJKpWg0GpimycHBAYlEAqUUtVqNfD6P53k8PDxwc3PD4+Mji8WCTqdDs9nE8zzCMERKiWEYSCkxTZO7uzuEaZpRo9Hg+PiYQqGA1prlcsnJycmuJu/v7/i+z/PzM7ZtY9s2juPsffnh4SFhGGIYxrZmuwZyXXe/pX9S//7Hj4ExMAb+feB30VyjlwVvOWUAAAAASUVORK5CYII="
+                        },
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABmJLR0QA/wD/AP+gvaeTAAABx0lEQVRIie2VMWsiQRTHfzOzarAIi4YowUbWWKUQQRCRFCGVjX6P5BNY6NVWfg1b+1hYBULsTSDbCGsaXZZsIpvN7FV6d2C46nJwt//2zZsf839v3hNAxBdKfiUsBsbAGPifAhXw7bNgNpvl7OyM09NTzs/PUUrR6/VYr9copRBCsNlsAJBSEkU/pqQQYu+dxjawPayU4uPjg4uLC66vr7Esi3Q6TRAEPD09kcvlmE6nXF1dcXl5Sbvd5vb2Fq01AMlkkiAIfoH/LCGEiKSUu4QoiqhWq/T7febzObPZjPv7e1zXpdVqUa/XKZVKvLy8YFkW2WwW27YZDAaMx+PfWirYsy201hwdHbFarT5NLBaLdLtdKpUKyWQS3/cZjUY4jkMmk0EIgZRyZ30ikWAymWAUCgXK5TKvr6+8vb2htWY4HJJKpWg0GpimycHBAYlEAqUUtVqNfD6P53k8PDxwc3PD4+Mji8WCTqdDs9nE8zzCMERKiWEYSCkxTZO7uzuEaZpRo9Hg+PiYQqGA1prlcsnJycmuJu/v7/i+z/PzM7ZtY9s2juPsffnh4SFhGGIYxrZmuwZyXXe/pX9S//7Hj4ExMAb+feB30VyjlwVvOWUAAAAASUVORK5CYII="
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "outputLabels[yTest[5000]]"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "\u001b[32m'Sandal'\u001b[39m"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "showGrayscaleImage(xTrain[28000], 28, 28)"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "image/png",
+                            "value": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABmJLR0QA/wD/AP+gvaeTAAAFcElEQVRIiY2Wu2/UTBvFf2OPr+u9ZJMNkQKsKAJCAnFpkoIuoqBKSY2go6SioEW0lDS0VPwJ6egQK6EUoEAURSJREimbxF7b69vMV/Ct9aINJCNZU9h6zpzznOeMBaC54PI8j3a7zYMHD+j1egyHQwaDAT9+/PjjOyklVVWh9XRp8S9AIQRPnjzh9u3bXL16lf39fUzTZGVlhe/fv1OWJa1WiyzL2Nvb4/3793z9+vWfh54CNE2TqqrodDq8ffuWpaUl8jwnz3MajQYLCwsEQUCSJAghiKKIJEkIw5Dt7W2+ffvGp0+f+Pz585mA8ixWAKurq3S7XTY3N7lz5w79fp8gCMjznKqqcF0X27ZZWFhgPB7z5csXoiji3r173L17l2fPnlEUxfmAZVkCsL29zc+fP1laWuLGjRucnp5iWRZhGBKGIUophBBcvnyZOI7p9XoEQYDrurx58+ZMMADjb1oPBgNM02R+fp4wDEnTFM/zkFISBAFSStrtNo7j4DgOnU6Hra0tPn78yGAw+FvZv5vm3bt3rK2tkaYpUkoajQZhGDIej2k2m4xGIxqNBlprfN+v+2maJhsbGzx69OjigHNzc2xsbJCmKUdHR/R6PaqqIkkStNbMzs6SJAlKKcbjMQDNZhOlFFJKfN/n1q1bHB4eXkzSp0+f4jgOQgj6/T5CCEzTpNls4jgO8LvXjuMQBAGe51FVVe1w0zR5+PDhmQzPBFxbWyNJEqqqqhmUZUlZllRVRVmW9VBP9sl7gDRNefz48cUlLYqCnZ0dDMNAa41SCqUURVFgGEbdT8uyiOMYx3HQWuN5HnmeY5om3W6XXq83BTg1Fp7nsbu7i9Yax3HwPI+DgwNs2/5DMiEElmXRaDSwbZuiKLAsiyAIamNdSNKbN2/S7/epqoo0TTEMAyEErusihKhlFULUITGRVUqJ1posy3Ach36/fz7gtWvXgN89ieMYwzBIkoQ4jqmqiqqq6qEvy5LRaESWZWRZhm3bCCFI0xStNdevXz9f0kuXLtWnFUIQBAGzs7Mopeo+TVh6nkez2WRmZoY0TevROD09RWvN3Nzc+QyVUgDkeQ7A8fFxnZ9CiFpirXXt1izLSJKEzc1N8jyvJfY873zAiePyPKfdbjMcDmsDKKXq/szPzwO/HT1x5u7uLoZhEIYho9EI3/fPB+x0OvWg27bNzs4Otm3XOer7PicnJ7x69Yo8z+l2u8zMzNRsJs4GzjTNVA8nszfZFxcXSZKE8XiMbdsYhoGUkiiKgN9DnmUZruuSZRlaa6SU9eicC1gUBUVRoLXm8PCQOI5xXZeiKCjLEiEEvu/z+vVrhBAkSYJlWUgpsSyLo6Oj+hCj0eh8wMnVM8nOVquFEIJWq1Wboaoqoiii0+kQBAGmaRJFEcvLyzUz13UxjOnknAJM07R2YbPZxDRNtra2aLVaFEWBUoput4vjOOR5ThzHmKaJYRg4jkO73abRaGBZVp3D/wQcDoccHBwgpawd2e12a8MURUFVVUgp69ujqqrfxaRkPB5TliV7e3ucnJycD+g4DkopTNPEcZw6ZXzfJ8sylFJ0Oh2KoiAMQ+I4RkpZm6zb7dayBkFwMYazs7NIKTk+Psb3fTqdDq7rkqZpzWBS0LZtpJR1CPz69Yt2u41SivX19SnAM6+n+/fvMxgMePHiBS9fvuT4+BgpJXEcY1kWpmmSpimmadZGUkqxuLjI8+fP+fDhA61WizAMpwD5P+CZz+rqqtZa68PDQz0cDrVSSqdpqv+7qqrSe3t7en9/X2ut9ZUrV/5aD9BTDCdZOTHC8vIyKysruK77xy9FFEVkWcbJyQlRFLG7u8v6+np96xuGUefyf9f/ADY2BFZOX8ByAAAAAElFTkSuQmCC"
+                        },
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABmJLR0QA/wD/AP+gvaeTAAAFcElEQVRIiY2Wu2/UTBvFf2OPr+u9ZJMNkQKsKAJCAnFpkoIuoqBKSY2go6SioEW0lDS0VPwJ6egQK6EUoEAURSJREimbxF7b69vMV/Ct9aINJCNZU9h6zpzznOeMBaC54PI8j3a7zYMHD+j1egyHQwaDAT9+/PjjOyklVVWh9XRp8S9AIQRPnjzh9u3bXL16lf39fUzTZGVlhe/fv1OWJa1WiyzL2Nvb4/3793z9+vWfh54CNE2TqqrodDq8ffuWpaUl8jwnz3MajQYLCwsEQUCSJAghiKKIJEkIw5Dt7W2+ffvGp0+f+Pz585mA8ixWAKurq3S7XTY3N7lz5w79fp8gCMjznKqqcF0X27ZZWFhgPB7z5csXoiji3r173L17l2fPnlEUxfmAZVkCsL29zc+fP1laWuLGjRucnp5iWRZhGBKGIUophBBcvnyZOI7p9XoEQYDrurx58+ZMMADjb1oPBgNM02R+fp4wDEnTFM/zkFISBAFSStrtNo7j4DgOnU6Hra0tPn78yGAw+FvZv5vm3bt3rK2tkaYpUkoajQZhGDIej2k2m4xGIxqNBlprfN+v+2maJhsbGzx69OjigHNzc2xsbJCmKUdHR/R6PaqqIkkStNbMzs6SJAlKKcbjMQDNZhOlFFJKfN/n1q1bHB4eXkzSp0+f4jgOQgj6/T5CCEzTpNls4jgO8LvXjuMQBAGe51FVVe1w0zR5+PDhmQzPBFxbWyNJEqqqqhmUZUlZllRVRVmW9VBP9sl7gDRNefz48cUlLYqCnZ0dDMNAa41SCqUURVFgGEbdT8uyiOMYx3HQWuN5HnmeY5om3W6XXq83BTg1Fp7nsbu7i9Yax3HwPI+DgwNs2/5DMiEElmXRaDSwbZuiKLAsiyAIamNdSNKbN2/S7/epqoo0TTEMAyEErusihKhlFULUITGRVUqJ1posy3Ach36/fz7gtWvXgN89ieMYwzBIkoQ4jqmqiqqq6qEvy5LRaESWZWRZhm3bCCFI0xStNdevXz9f0kuXLtWnFUIQBAGzs7Mopeo+TVh6nkez2WRmZoY0TevROD09RWvN3Nzc+QyVUgDkeQ7A8fFxnZ9CiFpirXXt1izLSJKEzc1N8jyvJfY873zAiePyPKfdbjMcDmsDKKXq/szPzwO/HT1x5u7uLoZhEIYho9EI3/fPB+x0OvWg27bNzs4Otm3XOer7PicnJ7x69Yo8z+l2u8zMzNRsJs4GzjTNVA8nszfZFxcXSZKE8XiMbdsYhoGUkiiKgN9DnmUZruuSZRlaa6SU9eicC1gUBUVRoLXm8PCQOI5xXZeiKCjLEiEEvu/z+vVrhBAkSYJlWUgpsSyLo6Oj+hCj0eh8wMnVM8nOVquFEIJWq1Wboaoqoiii0+kQBAGmaRJFEcvLyzUz13UxjOnknAJM07R2YbPZxDRNtra2aLVaFEWBUoput4vjOOR5ThzHmKaJYRg4jkO73abRaGBZVp3D/wQcDoccHBwgpawd2e12a8MURUFVVUgp69ujqqrfxaRkPB5TliV7e3ucnJycD+g4DkopTNPEcZw6ZXzfJ8sylFJ0Oh2KoiAMQ+I4RkpZm6zb7dayBkFwMYazs7NIKTk+Psb3fTqdDq7rkqZpzWBS0LZtpJR1CPz69Yt2u41SivX19SnAM6+n+/fvMxgMePHiBS9fvuT4+BgpJXEcY1kWpmmSpimmadZGUkqxuLjI8+fP+fDhA61WizAMpwD5P+CZz+rqqtZa68PDQz0cDrVSSqdpqv+7qqrSe3t7en9/X2ut9ZUrV/5aD9BTDCdZOTHC8vIyKysruK77xy9FFEVkWcbJyQlRFLG7u8v6+np96xuGUefyf9f/ADY2BFZOX8ByAAAAAElFTkSuQmCC"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "outputLabels[yTrain[28000]];"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "\u001b[32m'Coat'\u001b[39m"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const { normalize } = require(\"./util/normalize\");\r\n\r\ntf.util.shuffleCombo(xTrain, yTrain);\r\ntf.util.shuffleCombo(xTest, yTest);\r\n\r\nconst xsTrain = tf.tensor2d(normalize(xTrain, 255, 0));\r\nconst ysTrain = tf.oneHot(yTrain, 10);\r\nconst xsTest = tf.tensor2d(normalize(xTest, 255, 0));\r\nconst ysTest = tf.oneHot(yTest, 10);\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "xsTrain.print()"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "Tensor",
+                                "    [[0        , 0        , 0        , ..., 0        , 0        , 0        ],",
+                                "     [0        , 0        , 0        , ..., 0        , 0        , 0        ],",
+                                "     [0        , 0        , 0        , ..., 0        , 0        , 0        ],",
+                                "     ...,",
+                                "     [0        , 0        , 0        , ..., 0        , 0        , 0        ],",
+                                "     [0        , 0        , 0        , ..., 0        , 0        , 0        ],",
+                                "     [0        , 0        , 0        , ..., 0.345098 , 0        , 0        ]]",
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Model"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Create Model"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const metrics = [];\r\nlet cycle = 0;\r\nlet model;\r\ntry {\r\n  model = tf.sequential({\r\n    layers: [\r\n      tf.layers.dense({\r\n        units: 10,\r\n        activation: 'relu',\r\n        name: \"inputLayer\",\r\n        inputShape: [28 * 28]\r\n      }),\r\n      tf.layers.dense({\r\n        units: 20,\r\n        activation: \"relu\"\r\n      }),\r\n      tf.layers.dense({\r\n        units: 10,\r\n        kernelInitializer: \"VarianceScaling\",\r\n        activation: \"softmax\",\r\n        name: \"outputLayer\"\r\n      })\r\n    ]\r\n  });\r\n\r\n  model.compile({\r\n    optimizer: tf.train.adam(0.001),\r\n    loss: \"categoricalCrossentropy\",\r\n    metrics: [\"accuracy\"]\r\n  });\r\n} catch (e) {\r\n  console.error(e);\r\n}\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const tfvis = require('@tensorflow/tfjs-vis');\r\n\r\nconst surface = { name: \"Model Summary\", tab: \"Model Inspection\" };\r\ntfvis.show.modelSummary(surface, model);"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.tfjsvis.modelsummary",
+                            "value": {
+                                "type": "tensorFlowVis",
+                                "request": "modelsummary",
+                                "requestId": "xf699600b25514423bb75973e483a9ea5",
+                                "container": {
+                                    "name": "Model Summary",
+                                    "tab": "Model Inspection"
+                                },
+                                "model": {
+                                    "layers": [
+                                        {
+                                            "outputShape": [
+                                                null,
+                                                10
+                                            ],
+                                            "name": "inputLayer",
+                                            "parameters": 7850
+                                        },
+                                        {
+                                            "outputShape": [
+                                                null,
+                                                20
+                                            ],
+                                            "name": "dense_Dense9",
+                                            "parameters": 220
+                                        },
+                                        {
+                                            "outputShape": [
+                                                null,
+                                                10
+                                            ],
+                                            "name": "outputLayer",
+                                            "parameters": 210
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Training"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "try {\r\n  cycle += 1;\r\n  const trainResult = await model.fit(xsTrain, ysTrain, {\r\n    epochs: 10,\r\n    verbose: 0,\r\n    shuffle: true,\r\n    validationSplit: 0.2\r\n  });\r\n} catch (e) {\r\n  console.error(e)\r\n}"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Evaluate"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const { from } = require(\"arquero\");\r\n\r\nconst currentMetrics = await model.evaluate(xsTest, ysTest);\r\nif (Array.isArray(currentMetrics)) {\r\n  const ce = await Promise.all(currentMetrics.map((e) => e.array()));\r\n\r\n  const obj = ce.reduce((r, c, i) => ({ [i]: c, ...r }), { cycle });\r\n  metrics.push(obj);\r\n} else {\r\n  metrics.push({ cycle, 0: await currentMetrics.array() });\r\n}\r\nfrom(metrics.slice(-2));\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "text/html",
+                            "value": [
+                                "<style> table, th, tr { text-align: left; }</style><table><thead><tr><th style=\"text-align: right;\">0</th><th style=\"text-align: right;\">1</th><th style=\"text-align: right;\">cycle</th></tr></thead><tbody><tr><td style=\"text-align: right;\">0.426813</td><td style=\"text-align: right;\">0.853900</td><td style=\"text-align: right;\">3</td></tr><tr><td style=\"text-align: right;\">0.415594</td><td style=\"text-align: right;\">0.856500</td><td style=\"text-align: right;\">4</td></tr></tbody></table>"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const { Plotly } = require(\"node-kernel\");\r\n\r\nconst xLabels = metrics.map(({ cycle }) => cycle);\r\nconst plotData = Object.keys(metrics[0])\r\n  .filter((key) => key !== \"cycle\")\r\n  .map((key) => ({\r\n    x: xLabels,\r\n    y: metrics.map((error) => error[key]),\r\n    mode: \"lines+markers\",\r\n    type: \"scatter\",\r\n    name: `Metric #${key}`\r\n  }));\r\n\r\nPlotly.newPlot(\"myDiv\", plotData, {\r\n  title: \"Metrics vs Train Epoch x 100\",\r\n  height: 400,\r\n  width: 600,\r\n  showlegend: true\r\n});\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.ts.notebook.plotly+json",
+                            "value": {
+                                "requestId": "xee47f079cf2c4d15979ae71932547f6d",
+                                "type": "generatePlot",
+                                "ele": "myDiv",
+                                "data": [
+                                    {
+                                        "x": [
+                                            1,
+                                            2,
+                                            3
+                                        ],
+                                        "y": [
+                                            0.4338468611240387,
+                                            0.4142974615097046,
+                                            0.4268125593662262
+                                        ],
+                                        "mode": "lines+markers",
+                                        "type": "scatter",
+                                        "name": "Metric #0"
+                                    },
+                                    {
+                                        "x": [
+                                            1,
+                                            2,
+                                            3
+                                        ],
+                                        "y": [
+                                            0.8468999862670898,
+                                            0.8539999723434448,
+                                            0.8539000153541565
+                                        ],
+                                        "mode": "lines+markers",
+                                        "type": "scatter",
+                                        "name": "Metric #1"
+                                    }
+                                ],
+                                "layout": {
+                                    "title": "Metrics vs Train Epoch x 100",
+                                    "height": 400,
+                                    "width": 600,
+                                    "showlegend": true
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Prediction"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "javascript",
+            "source": [
+                "const testIndex = 35;\r\nconst pred = await model\r\n  .predict(tf.tensor2d([xTest[testIndex]]))\r\n  .squeeze()\r\n  .round()\r\n  .array();\r\n\r\nconst predIndex = await tf.argMax(pred).array();\r\nconsole.log(`Predict = ${predIndex} (${outputLabels[predIndex]}) vs actual = ${yTest[testIndex]} (${outputLabels[yTest[testIndex]]})`);\r\n\r\nshowGrayscaleImage(xTest[testIndex], 28, 28);\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "Predict = 0 (T-shirt/top) vs actual = 1 (Trouser)",
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "image/png",
+                            "value": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABmJLR0QA/wD/AP+gvaeTAAAEE0lEQVRIiaWVy27TWhSGv207vseNXA8SIiFVpQ0SzKiQOmXQF6h4H56EOTwAQxBiyITOEBOgoEKuDYlxtvf25UxOfGbOUbOH9tb6/P/rX8sCqNlxLi8vub6+5ujoCM/zWCwWDAYDqqriz58/jEYjvnz5wuvXr3eVwth5A3j27BkXFxfMZjNmsxlKKU5PT1FKEccxDx484OnTp/+nFCbwou3CwcEBJycn5HnO/fv3mc/nvHnzhk+fPnF0dMRqtSLLMr59+0YYhvz48WM/haPRiCRJUEqRZRlXV1d8/PiRJ0+ekKYps9mMV69esVqtODs726lwJ1AIge/7WJZFWZYkSYJt23z9+pWTkxPiOOb8/JzpdMpwONwf6HkelmUxnU65uLhASklVVWRZRpZlPH/+nMFgQL/fx3Xd/YCu6+K6LqZp0ul0SNOULMsQQuC6LuPxmJubG5RS9Ho9yrLcCbRaX1oWrutiGAbX19cEQYCUkiiKCMMQy7IwTRPTNBFC4Hnefgq3SizLQmuNaZqUZUkQBARBgGVZ1HWN1hrf93fCdgK3/QuCgDRNSZKEyWTChw8fcBwHAKUUhmGQJAnT6XQ/YFVVeJ6H4zjYtk2WZRwfH3N5eUme5ywWi8bOuq6xLGunra09NAyjsTOKIr5//47nebx7947z83OUUszn8/+K/evGZrO5m8KiKDg4OEBK2VjW7XaZTCYopUjTlLquMU2TqqoAsG27VWErME1TDMNAa41hGKRpymAwYLlcNsXzPEcIAUCSJFhWq2ntlmqtsW2bsiypqorb21uGwyHj8RjHcajrGiklSimEEGitdw5/q8JtEMqypCxLpJT4vo+UkiAIKIqCuq7J85xOp8N6vd4Zmp2rbWtlnucopYiiiL9//6KUajbQZrPB9/3GkTsDTdPEdV2UUlRVRRiGBEHQWOe6LmVZorWmKAqAnT1sBW7nryxLTNPEtm0cx2G5XFIUBbZtY9t2E6qyLJsA3Qno+z6dTgelVAPfWpnnebNh1us1QgiKosA0zVZgq/44jjFNk9Vqheu6zcxtbet2uziOg9Yay7KQUtLpdO6u8OHDh2itWSwW9Ho9qqpqhny7TbYfApBl2X4p7ff7FEWBlBLXdZFS4jgOhmFQVRVaa+q6blRprQnD8O7AyWRCv99nuVxyeHhIlmVorRFCNH/9rcXb53tZenNzQxiG/P79mziOm/EQQtDtdtlsNk16t2fXf7EV+OvXL4IgYDweE0URSimklAyHQ+7du8d8Pm8SvF1xe/VQCMFoNEJKyfHxMYZh8PjxY5Ik4fT0lDiOiaKoWdqHh4ckSdIKbB2L1WrF+/fvWa/XXF1d8fbtW3q9Hi9fvuTRo0fkec7Pnz+Zz+f0+30+f/6MYbRvy38ApXj19iQbbdkAAAAASUVORK5CYII="
+                        },
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABmJLR0QA/wD/AP+gvaeTAAAEE0lEQVRIiaWVy27TWhSGv207vseNXA8SIiFVpQ0SzKiQOmXQF6h4H56EOTwAQxBiyITOEBOgoEKuDYlxtvf25UxOfGbOUbOH9tb6/P/rX8sCqNlxLi8vub6+5ujoCM/zWCwWDAYDqqriz58/jEYjvnz5wuvXr3eVwth5A3j27BkXFxfMZjNmsxlKKU5PT1FKEccxDx484OnTp/+nFCbwou3CwcEBJycn5HnO/fv3mc/nvHnzhk+fPnF0dMRqtSLLMr59+0YYhvz48WM/haPRiCRJUEqRZRlXV1d8/PiRJ0+ekKYps9mMV69esVqtODs726lwJ1AIge/7WJZFWZYkSYJt23z9+pWTkxPiOOb8/JzpdMpwONwf6HkelmUxnU65uLhASklVVWRZRpZlPH/+nMFgQL/fx3Xd/YCu6+K6LqZp0ul0SNOULMsQQuC6LuPxmJubG5RS9Ho9yrLcCbRaX1oWrutiGAbX19cEQYCUkiiKCMMQy7IwTRPTNBFC4Hnefgq3SizLQmuNaZqUZUkQBARBgGVZ1HWN1hrf93fCdgK3/QuCgDRNSZKEyWTChw8fcBwHAKUUhmGQJAnT6XQ/YFVVeJ6H4zjYtk2WZRwfH3N5eUme5ywWi8bOuq6xLGunra09NAyjsTOKIr5//47nebx7947z83OUUszn8/+K/evGZrO5m8KiKDg4OEBK2VjW7XaZTCYopUjTlLquMU2TqqoAsG27VWErME1TDMNAa41hGKRpymAwYLlcNsXzPEcIAUCSJFhWq2ntlmqtsW2bsiypqorb21uGwyHj8RjHcajrGiklSimEEGitdw5/q8JtEMqypCxLpJT4vo+UkiAIKIqCuq7J85xOp8N6vd4Zmp2rbWtlnucopYiiiL9//6KUajbQZrPB9/3GkTsDTdPEdV2UUlRVRRiGBEHQWOe6LmVZorWmKAqAnT1sBW7nryxLTNPEtm0cx2G5XFIUBbZtY9t2E6qyLJsA3Qno+z6dTgelVAPfWpnnebNh1us1QgiKosA0zVZgq/44jjFNk9Vqheu6zcxtbet2uziOg9Yay7KQUtLpdO6u8OHDh2itWSwW9Ho9qqpqhny7TbYfApBl2X4p7ff7FEWBlBLXdZFS4jgOhmFQVRVaa+q6blRprQnD8O7AyWRCv99nuVxyeHhIlmVorRFCNH/9rcXb53tZenNzQxiG/P79mziOm/EQQtDtdtlsNk16t2fXf7EV+OvXL4IgYDweE0URSimklAyHQ+7du8d8Pm8SvF1xe/VQCMFoNEJKyfHxMYZh8PjxY5Ik4fT0lDiOiaKoWdqHh4ckSdIKbB2L1WrF+/fvWa/XXF1d8fbtW3q9Hi9fvuTRo0fkec7Pnz+Zz+f0+30+f/6MYbRvy38ApXj19iQbbdkAAAAASUVORK5CYII="
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

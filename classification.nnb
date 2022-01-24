@@ -457,7 +457,7 @@
         {
             "language": "typescript",
             "source": [
-                "try {\r\n  cycle += 1;\r\n  const trainResult = await model.fit(tf.tensor2d(xTrain), tf.tensor2d(yTrain), {\r\n    epochs: 100,\r\n    verbose: 0,\r\n    // shuffle: true,\r\n    // validationSplit: 0.9\r\n  });\r\n} catch (e) {\r\n  console.error(e)\r\n}"
+                "try {\r\n  cycle += 1;\r\n  const trainResult = await model.fit(tf.tensor2d(xTrain), tf.tensor2d(yTrain), {\r\n    epochs: 100,\r\n    verbose: 0,\r\n    // shuffle: true,\r\n    // validationSplit: 0.1\r\n  });\r\n} catch (e) {\r\n  console.error(e)\r\n}"
             ],
             "outputs": [
                 {

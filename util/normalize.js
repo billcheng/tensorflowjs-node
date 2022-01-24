@@ -11,7 +11,27 @@ function getNormalizedMap(array, columnNames) {
   return map;
 }
 
-function normalize(array, columnNames, normalizedMap) {
+function normalize(array, arg1, arg2) {
+  if (Array.isArray(array[0])) {
+    if (arg1 && (arg2 || arg2===0)) {
+      return normalizeArray(array, arg1, arg2);
+    } else {
+      const flatten = array.flat();
+      const min = Math.min(...flatten);
+      if (arg1) {
+        return normalizeArray(array, arg1, min);
+      } else {
+        const max = Math.max(...flatten);
+        const range = max - min;
+        return normalizeArray(array, range, min);
+      }
+    }
+  }
+
+  return normalizeObject(array, arg1, arg2);
+}
+
+function normalizeObject(array, columnNames, normalizedMap) {
   const map = normalizedMap ?? getNormalizeMap(array, columnNames);
   const result = array.map((row) =>
     columnNames.reduce((r, columnName) => {
@@ -22,6 +42,10 @@ function normalize(array, columnNames, normalizedMap) {
   );
 
   return result;
+}
+
+function normalizeArray(arrays, range, min) {
+  return arrays.map((array) => array.map(element => (element - min) / range));
 }
 
 module.exports = { getNormalizedMap, normalize };
