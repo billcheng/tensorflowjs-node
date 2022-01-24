@@ -256,7 +256,7 @@
         {
             "language": "typescript",
             "source": [
-                "const numberOfFeatures = xTrain[0].length;\r\nconst errors = [];\r\nlet cycle = 0;\r\n\r\nconst model = tf.sequential({\r\n  layers: [\r\n    tf.layers.dense({\r\n      units: 6,\r\n      name: \"inputLayer\",\r\n      activation: \"relu\",\r\n      inputShape: [numberOfFeatures]\r\n    }),\r\n    // tf.layers.dense({ units: 16, activation: \"relu\" }),\r\n    tf.layers.dense({ units: 2, activation: \"softmax\", name: \"outputLayer\" })\r\n  ]\r\n});\r\n\r\nmodel.compile({\r\n  optimizer: tf.train.adam(0.001),\r\n  // optimizer: tf.train.sgd(0.01),\r\n  loss: tf.losses.softmaxCrossEntropy,\r\n  metrics: [\"accuracy\"]\r\n});\r\n\r\nnumberOfFeatures;"
+                "const numberOfFeatures = xTrain[0].length;\r\nconst metrics = [];\r\nlet cycle = 0;\r\n\r\nconst model = tf.sequential({\r\n  layers: [\r\n    tf.layers.dense({\r\n      units: 6,\r\n      name: \"inputLayer\",\r\n      activation: \"relu\",\r\n      inputShape: [numberOfFeatures]\r\n    }),\r\n    // tf.layers.dense({ units: 16, activation: \"relu\" }),\r\n    tf.layers.dense({ units: 2, activation: \"softmax\", name: \"outputLayer\" })\r\n  ]\r\n});\r\n\r\nmodel.compile({\r\n  optimizer: tf.train.adam(0.001),\r\n  // optimizer: tf.train.sgd(0.01),\r\n  loss: tf.losses.softmaxCrossEntropy,\r\n  metrics: [\"accuracy\"]\r\n});\r\n\r\nnumberOfFeatures;"
             ],
             "outputs": [
                 {
@@ -318,7 +318,7 @@
         {
             "language": "typescript",
             "source": [
-                "const currentErrors = await model.evaluate(\r\n  tf.tensor2d(xTest),\r\n  tf.tensor2d(yTest)\r\n);\r\nif (Array.isArray(currentErrors)) {\r\n  const ce = await Promise.all(currentErrors.map((e) => e.array()));\r\n\r\n  const obj = ce.reduce((r, c, i) => ({ [i]: c, ...r }), { cycle });\r\n  errors.push(obj);\r\n} else {\r\n  errors.push({ cycle, 0: await currentErrors.array() });\r\n}\r\nfrom(errors.slice(-2));\r\n"
+                "const currentMetrics = await model.evaluate(\r\n  tf.tensor2d(xTest),\r\n  tf.tensor2d(yTest)\r\n);\r\nif (Array.isArray(currentMetrics)) {\r\n  const ce = await Promise.all(currentMetrics.map((e) => e.array()));\r\n\r\n  const obj = ce.reduce((r, c, i) => ({ [i]: c, ...r }), { cycle });\r\n  metrics.push(obj);\r\n} else {\r\n  metrics.push({ cycle, 0: await currentMetrics.array() });\r\n}\r\nfrom(metrics.slice(-2));\r\n"
             ],
             "outputs": [
                 {
@@ -347,7 +347,7 @@
         {
             "language": "typescript",
             "source": [
-                "const { Plotly } = require(\"node-kernel\");\r\n\r\nconst xLabels = errors.map(({ cycle }) => cycle);\r\nconst plotData = Object.keys(errors[0])\r\n  .filter((key) => key !== \"cycle\")\r\n  .map((key) => ({\r\n    x: xLabels,\r\n    y: errors.map((error) => error[key]),\r\n    mode: \"lines+markers\",\r\n    type: \"scatter\",\r\n    name: `Metric #${key}`\r\n  }));\r\n\r\nPlotly.newPlot(\"myDiv\", plotData, {\r\n  title: \"Metrics vs Train Epoch x 100\",\r\n  height: 400,\r\n  width: 600,\r\n  showlegend: true\r\n});\r\n"
+                "const { Plotly } = require(\"node-kernel\");\r\n\r\nconst xLabels = metrics.map(({ cycle }) => cycle);\r\nconst plotData = Object.keys(metrics[0])\r\n  .filter((key) => key !== \"cycle\")\r\n  .map((key) => ({\r\n    x: xLabels,\r\n    y: metrics.map((error) => error[key]),\r\n    mode: \"lines+markers\",\r\n    type: \"scatter\",\r\n    name: `Metric #${key}`\r\n  }));\r\n\r\nPlotly.newPlot(\"myDiv\", plotData, {\r\n  title: \"Metrics vs Train Epoch x 100\",\r\n  height: 400,\r\n  width: 600,\r\n  showlegend: true\r\n});\r\n"
             ],
             "outputs": [
                 {
@@ -429,9 +429,9 @@
             "outputs": []
         },
         {
-            "language": "typescript",
+            "language": "javascript",
             "source": [
-                "const testIndex = 0;\r\nconst pred = await model\r\n  .predict(tf.tensor2d([xTest[testIndex]]))\r\n  .squeeze()\r\n  .round()\r\n  .array();\r\n`${JSON.stringify(xTest[testIndex])} => [${pred}] vs [${yTest[testIndex]}]`"
+                "const testIndex = 0;\r\nconst pred = await model\r\n  .predict(tf.tensor2d([xTest[testIndex]]))\r\n  .squeeze()\r\n  .round()\r\n  .array();\r\n  \r\nconsole.log(`${pred} vs ${yTest[testIndex]}`);\r\nshowGrayscaleImage(xTest[testIndex], 28, 28);\r\n"
             ],
             "outputs": [
                 {
