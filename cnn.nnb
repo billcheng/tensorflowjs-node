@@ -436,7 +436,7 @@
         {
             "language": "typescript",
             "source": [
-                "const history = await model.fit(xsTrain, ysTrain, {\r\n  epochs: 10,\r\n  shuffle: true,\r\n  validationSplit: 0.1,\r\n  verbose: 1\r\n})"
+                "const history = await model.fit(xsTrain, ysTrain, {\r\n  epochs: 10### #,\r\n  shuffle: true,\r\n  validationSplit: 0.1,\r\n  verbose: 1\r\n})"
             ],
             "outputs": [
                 {
@@ -571,6 +571,32 @@
                                 "    0.26023104786872864",
                                 "Tensor",
                                 "    0.9057999849319458",
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Save"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "try {\r\n  await model.save('file://./models/cnn');\r\n} catch(e){\r\n  console.error(e);\r\n}"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
                                 "",
                                 ""
                             ]
