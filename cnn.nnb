@@ -1,0 +1,583 @@
+{
+    "cells": [
+        {
+            "language": "markdown",
+            "source": [
+                "# Convolution Neural Network (CNN)"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Import Tensorflow"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "var tf =\r\n  require(\"@tensorflow/tfjs-node\") as typeof import(\"@tensorflow/tfjs-node\");\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stderr",
+                            "value": [
+                                "2022-01-26 18:21:52.595814: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2\r",
+                                "To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.\r",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Dataset"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Load"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const loadJSON = require(\"./util/loadjson\");\r\n// https://storage.googleapis.com/ztm_tf_course/food_vision/pizza_steak.zip\r\n\r\nfunction load(datasetName, labelNumber, xs, ys) {\r\n  const x = loadJSON(\r\n    `./data/digits/fashion-mnist/${datasetName}-${labelNumber}.json`\r\n  );\r\n  const y = Array(x.length).fill(labelNumber);\r\n  xs.push(...x);\r\n  ys.push(...y);\r\n}\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const xTrain = [];\r\nconst yTrain = [];\r\nconst xTest = [];\r\nconst yTest = [];\r\ntry {\r\n  for (let label = 0; label <= 9; label++) {\r\n    console.log(`Loading training & test datasets with label ${label}...`);\r\n    load(\"training\", label, xTrain, yTrain);\r\n    load(\"test\", label, xTest, yTest);\r\n  }\r\n} catch (e) {\r\n  console.error(e);\r\n}"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "Loading training & test datasets with label 0...",
+                                "Loading training & test datasets with label 1...",
+                                "Loading training & test datasets with label 2...",
+                                "Loading training & test datasets with label 3...",
+                                "Loading training & test datasets with label 4...",
+                                "Loading training & test datasets with label 5...",
+                                "Loading training & test datasets with label 6...",
+                                "Loading training & test datasets with label 7...",
+                                "Loading training & test datasets with label 8...",
+                                "Loading training & test datasets with label 9...",
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Normalize"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const { normalize } = require(\"./util/normalize\");\r\n\r\ntf.util.shuffleCombo(xTrain, yTrain);\r\n\r\nconst xsTrain = tf.tensor2d(normalize(xTrain, 255, 0)).reshape([xTrain.length, 28, 28, 1]);\r\nconst ysTrain = tf.oneHot(yTrain, 10);\r\nconst xsTest = tf.tensor2d(normalize(xTest, 255, 0)).reshape([xTest.length, 28, 28, 1]);\r\nconst ysTest = tf.oneHot(yTest, 10);"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "xsTrain.slice(0, 1).print();"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "Tensor",
+                                "    [[[[0        ],",
+                                "       [0        ],",
+                                "       [0        ],",
+                                "       ...,",
+                                "       [0        ],",
+                                "       [0        ],",
+                                "       [0        ]],",
+                                "",
+                                "      [[0        ],",
+                                "       [0        ],",
+                                "       [0        ],",
+                                "       ...,",
+                                "       [0        ],",
+                                "       [0        ],",
+                                "       [0        ]],",
+                                "",
+                                "      [[0        ],",
+                                "       [0        ],",
+                                "       [0        ],",
+                                "       ...,",
+                                "       [0        ],",
+                                "       [0        ],",
+                                "       [0        ]],",
+                                "",
+                                "      ...",
+                                "      [[0        ],",
+                                "       [0        ],",
+                                "       [0        ],",
+                                "       ...,",
+                                "       [0        ],",
+                                "       [0        ],",
+                                "       [0        ]],",
+                                "",
+                                "      [[0        ],",
+                                "       [0        ],",
+                                "       [0        ],",
+                                "       ...,",
+                                "       [0        ],",
+                                "       [0        ],",
+                                "       [0        ]],",
+                                "",
+                                "      [[0        ],",
+                                "       [0        ],",
+                                "       [0        ],",
+                                "       ...,",
+                                "       [0        ],",
+                                "       [0        ],",
+                                "       [0        ]]]]",
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "ysTrain.slice(0, 1).print();"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "Tensor",
+                                "     [[0, 0, 0, 1, 0, 0, 0, 0, 0, 0],]",
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const showGrayscaleImage = require(\"./util/showGrayscaleImage\");\r\n\r\nshowGrayscaleImage(xTrain[0], 28, 28);"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "image/png",
+                            "value": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABmJLR0QA/wD/AP+gvaeTAAAC4ElEQVRIia2VPUvsQBSGn5PJh9moiLraWKxoraiFqI2NlYViJ4KgYOtv0M5fYedvsLawEwtBLVQEQRAV3GXFSDaT3EIyNyv33oTrBoYMh+E8nHfOewYgLVrb29vpwsJCCqQiYuKWZaVAurS0lB4cHBTmAVKbEt/s7Cybm5ssLi6SpikiAkCSJADs7u6itS6TCqvMoaOjIyYmJtjY2AAgTVPSNAVgfX2dmZkZLi4uOgd0XZcwDNnb2+P6+pqVlRW2tra4v79nf3+fKIqw7VJilQOura0hIjSbTarVKnEcU61WsW2bRqOBUoqRkZFSQOHrMv/53d3d4bou7+/viAiDg4PEcczj4yO+71OpVACo1WqFwFI6eJ6H4zg4jkOSJDw/PyMi9PX1obWmq6uL29vbMqnKSXp6ekoQBHieR6VSobu7m56eHjzPw3VdgiDg+Pi4c8CTkxNEpM0OSZKYThURbm5uSgFLSXp5edkG0VobP2qtSZKEMAw7B3x7eyOKIlOhZVmmYhEhjuPSwFKSfn5+mqmSlxZoi3cM6Ps+tm0bSbN/BhERxsbGOgecnp5GKWWaJINkIy6OY5aXl0sBSxn/7OyMWq1Gs9lEKUWr1UIpZaCWZTEwMEAQBIXAwgp932dqaoowDLFtGxExczOrWGuN4zisrq7+HDg3N2eSZw2jlDJLRIiiCK018/PzPwdOTk6SJAmtVqstnm8Y13WJoojx8fFCYKEPe3t7TVfmmya/hy/rjI6OFgILK8xk+xMkH0uSpNSrX1hhfmZ+B36vvIz5CyvMG/x7PL/P7PFj4MfHx18B8Huufj/z38Cnpydj8L9JZlkWSimiKCoEFt7hy8sLIoLjOCaWt0QmpVKKOI5/Dry6uuL19dW8g3EcY1mWeR/hS0rP8zrTpQ8PDwwPD9NoNPA8r21oA6ZRPM/j/Py8EFhqeO/s7DA0NGS85rou/f391Ot1wjBEa029Xufw8LAQ+AtOZY5EBZvGOgAAAABJRU5ErkJggg=="
+                        },
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABmJLR0QA/wD/AP+gvaeTAAAC4ElEQVRIia2VPUvsQBSGn5PJh9moiLraWKxoraiFqI2NlYViJ4KgYOtv0M5fYedvsLawEwtBLVQEQRAV3GXFSDaT3EIyNyv33oTrBoYMh+E8nHfOewYgLVrb29vpwsJCCqQiYuKWZaVAurS0lB4cHBTmAVKbEt/s7Cybm5ssLi6SpikiAkCSJADs7u6itS6TCqvMoaOjIyYmJtjY2AAgTVPSNAVgfX2dmZkZLi4uOgd0XZcwDNnb2+P6+pqVlRW2tra4v79nf3+fKIqw7VJilQOura0hIjSbTarVKnEcU61WsW2bRqOBUoqRkZFSQOHrMv/53d3d4bou7+/viAiDg4PEcczj4yO+71OpVACo1WqFwFI6eJ6H4zg4jkOSJDw/PyMi9PX1obWmq6uL29vbMqnKSXp6ekoQBHieR6VSobu7m56eHjzPw3VdgiDg+Pi4c8CTkxNEpM0OSZKYThURbm5uSgFLSXp5edkG0VobP2qtSZKEMAw7B3x7eyOKIlOhZVmmYhEhjuPSwFKSfn5+mqmSlxZoi3cM6Ps+tm0bSbN/BhERxsbGOgecnp5GKWWaJINkIy6OY5aXl0sBSxn/7OyMWq1Gs9lEKUWr1UIpZaCWZTEwMEAQBIXAwgp932dqaoowDLFtGxExczOrWGuN4zisrq7+HDg3N2eSZw2jlDJLRIiiCK018/PzPwdOTk6SJAmtVqstnm8Y13WJoojx8fFCYKEPe3t7TVfmmya/hy/rjI6OFgILK8xk+xMkH0uSpNSrX1hhfmZ+B36vvIz5CyvMG/x7PL/P7PFj4MfHx18B8Huufj/z38Cnpydj8L9JZlkWSimiKCoEFt7hy8sLIoLjOCaWt0QmpVKKOI5/Dry6uuL19dW8g3EcY1mWeR/hS0rP8zrTpQ8PDwwPD9NoNPA8r21oA6ZRPM/j/Py8EFhqeO/s7DA0NGS85rou/f391Ot1wjBEa029Xufw8LAQ+AtOZY5EBZvGOgAAAABJRU5ErkJggg=="
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Model"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Create"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const model = tf.sequential({\r\n  layers: [\r\n    tf.layers.conv2d({\r\n      kernelSize: 2,\r\n      filters: 64,\r\n      // strides: 1,\r\n      inputShape: [28, 28, 1],\r\n      activation: \"relu\"\r\n    }),\r\n    tf.layers.maxPool2d({\r\n      poolSize: 2\r\n      // strides: [2, 2]\r\n    }),\r\n    tf.layers.dropout({\r\n      rate: 0.3\r\n    }),\r\n    tf.layers.conv2d({\r\n      kernelSize: 2,\r\n      filters: 32,\r\n      // strides: 1,\r\n      activation: \"relu\"\r\n      // kernelInitializer: \"VarianceScaling\"\r\n    }),\r\n    tf.layers.maxPool2d({\r\n      poolSize: 2\r\n      // strides: [2, 2]\r\n    }),\r\n    tf.layers.dropout({\r\n      rate: 0.3\r\n    }),\r\n    tf.layers.flatten(),\r\n    tf.layers.dense({\r\n      units: 256,\r\n      activation: 'relu'\r\n    }),\r\n    tf.layers.dropout({\r\n      rate: 0.5\r\n    }),\r\n    tf.layers.dense({\r\n      units: 10,\r\n      // kernelInitializer: \"VarianceScaling\",\r\n      activation: \"softmax\",\r\n      name: \"output\"\r\n    })\r\n  ]\r\n});\r\nmodel.compile({\r\n  optimizer: tf.train.adam(0.001),\r\n  loss: \"categoricalCrossentropy\",\r\n  metrics: [\"accuracy\"]\r\n});\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Layers Info"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const tfvis =\r\n  require(\"@tensorflow/tfjs-vis\") as typeof import(\"@tensorflow/tfjs-vis\");\r\ntfvis.show.modelSummary(\r\n  {\r\n    name: \"Model Summary\",\r\n    tab: \"Model Inspection\"\r\n  },\r\n  model\r\n);"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.tfjsvis.modelsummary",
+                            "value": {
+                                "type": "tensorFlowVis",
+                                "request": "modelsummary",
+                                "requestId": "x75ebb945ad67442fa0257f14578e2e68",
+                                "container": {
+                                    "name": "Model Summary",
+                                    "tab": "Model Inspection"
+                                },
+                                "model": {
+                                    "layers": [
+                                        {
+                                            "outputShape": [
+                                                null,
+                                                27,
+                                                27,
+                                                64
+                                            ],
+                                            "name": "conv2d_Conv2D3",
+                                            "parameters": 320
+                                        },
+                                        {
+                                            "outputShape": [
+                                                null,
+                                                13,
+                                                13,
+                                                64
+                                            ],
+                                            "name": "max_pooling2d_MaxPooling2D3",
+                                            "parameters": 0
+                                        },
+                                        {
+                                            "outputShape": [
+                                                null,
+                                                13,
+                                                13,
+                                                64
+                                            ],
+                                            "name": "dropout_Dropout1",
+                                            "parameters": 0
+                                        },
+                                        {
+                                            "outputShape": [
+                                                null,
+                                                12,
+                                                12,
+                                                32
+                                            ],
+                                            "name": "conv2d_Conv2D4",
+                                            "parameters": 8224
+                                        },
+                                        {
+                                            "outputShape": [
+                                                null,
+                                                6,
+                                                6,
+                                                32
+                                            ],
+                                            "name": "max_pooling2d_MaxPooling2D4",
+                                            "parameters": 0
+                                        },
+                                        {
+                                            "outputShape": [
+                                                null,
+                                                6,
+                                                6,
+                                                32
+                                            ],
+                                            "name": "dropout_Dropout2",
+                                            "parameters": 0
+                                        },
+                                        {
+                                            "outputShape": [
+                                                null,
+                                                1152
+                                            ],
+                                            "name": "flatten_Flatten2",
+                                            "parameters": 0
+                                        },
+                                        {
+                                            "outputShape": [
+                                                null,
+                                                256
+                                            ],
+                                            "name": "dense_Dense1",
+                                            "parameters": 295168
+                                        },
+                                        {
+                                            "outputShape": [
+                                                null,
+                                                256
+                                            ],
+                                            "name": "dropout_Dropout3",
+                                            "parameters": 0
+                                        },
+                                        {
+                                            "outputShape": [
+                                                null,
+                                                10
+                                            ],
+                                            "name": "output",
+                                            "parameters": 2570
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Training"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const history = await model.fit(xsTrain, ysTrain, {\r\n  epochs: 10,\r\n  shuffle: true,\r\n  validationSplit: 0.1,\r\n  verbose: 1\r\n})"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "Epoch 1 / 1",
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stderr",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "85704ms 1587us/step - acc=0.895 loss=0.281 val_acc=0.905 val_loss=0.249 ",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "tfvis.show.history({ name: \"show.history\", tab: \"Training\" }, history, [\r\n  \"loss\",\r\n  \"acc\"\r\n]);\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.tfjsvis.history",
+                            "value": {
+                                "type": "tensorFlowVis",
+                                "request": "history",
+                                "requestId": "xaec33b99a2d34a7887ce68f391d01866",
+                                "container": {
+                                    "name": "show.history",
+                                    "tab": "Training"
+                                },
+                                "history": {
+                                    "validationData": null,
+                                    "params": {
+                                        "epochs": 1,
+                                        "initialEpoch": 0,
+                                        "samples": 54000,
+                                        "steps": null,
+                                        "batchSize": 32,
+                                        "verbose": 1,
+                                        "doValidation": true,
+                                        "metrics": [
+                                            "loss",
+                                            "acc",
+                                            "val_loss",
+                                            "val_acc"
+                                        ]
+                                    },
+                                    "epoch": [
+                                        0
+                                    ],
+                                    "history": {
+                                        "val_loss": [
+                                            0.2713845372200012
+                                        ],
+                                        "val_acc": [
+                                            0.8964999914169312
+                                        ],
+                                        "loss": [
+                                            0.31015631556510925
+                                        ],
+                                        "acc": [
+                                            0.8837037086486816
+                                        ]
+                                    }
+                                },
+                                "metrics": [
+                                    "loss",
+                                    "acc"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "### Evaluation"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const scalars = model.evaluate(xsTest, ysTest);\r\nfor (const scalar of scalars) {\r\n  await scalar.print();\r\n}"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "Tensor",
+                                "    0.26023104786872864",
+                                "Tensor",
+                                "    0.9057999849319458",
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
